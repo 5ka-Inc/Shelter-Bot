@@ -20,6 +20,9 @@ public class Shelter {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "type")
+    private Type type;
+
     public Shelter() {
 
     }
@@ -38,6 +41,14 @@ public class Shelter {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public Type getType() {
+        return type;
+    }
+
+    public void setType(Type type) {
+        this.type = type;
     }
 
     @Override
