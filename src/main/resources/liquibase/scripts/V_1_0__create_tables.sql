@@ -9,7 +9,7 @@ CREATE TABLE users
     phone        TEXT,
     shelter_id   UUID,
     volunteer_id UUID,
-    is_adopter    BOOLEAN,
+    is_adopter   BOOLEAN,
 
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
