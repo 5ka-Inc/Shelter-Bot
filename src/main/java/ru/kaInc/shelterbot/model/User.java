@@ -29,14 +29,14 @@ public class User {
     private String phone;
 
     @ManyToOne()
-    @JoinColumn(name = "shelterId")
+    @JoinColumn(name = "shelter_id")
     private Shelter shelterId;
 
     @ManyToOne()
-    @JoinColumn(name = "volunteerId")
+    @JoinColumn(name = "volunteer_id")
     private Volunteer volunteerId;
 
-    @Column(name = "isAdopter")
+    @Column(name = "is_adopter")
     private Boolean isAdopter;
 
 
@@ -48,11 +48,11 @@ public class User {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         User user = (User) o;
-        return Objects.equals(id, user.id) && Objects.equals(chatId, user.chatId) && Objects.equals(name, user.name) && Objects.equals(phone, user.phone) && Objects.equals(shelter_id, user.shelter_id) && Objects.equals(volunteer_id, user.volunteer_id) && Objects.equals(isAdopter, user.isAdopter);
+        return Objects.equals(id, user.id);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, chatId, name, phone, shelter_id, volunteer_id, isAdopter);
+        return Objects.hash(id);
     }
 }
