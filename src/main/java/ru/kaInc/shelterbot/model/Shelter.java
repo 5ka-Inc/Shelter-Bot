@@ -20,36 +20,11 @@ public class Shelter {
     @Column(name = "name")
     private String name;
 
+    @OneToMany()
+    @JoinColumn(name = "user_id")
+    @JoinColumn(name = "volonteer_id")
     @Column(name = "type")
     private Type type;
-
-    public Shelter() {
-
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Type getType() {
-        return type;
-    }
-
-    public void setType(Type type) {
-        this.type = type;
-    }
 
     @Override
     public boolean equals(Object o) {
