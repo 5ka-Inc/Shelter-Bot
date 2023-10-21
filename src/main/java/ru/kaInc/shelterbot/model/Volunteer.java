@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +26,9 @@ public class Volunteer {
     @ManyToOne()
     @JoinColumn(name = "shelter_id")
     private Shelter shelter;
+
+    @OneToMany(mappedBy = "volunteer")
+    private Set<User> users;
 
     @Override
     public boolean equals(Object o) {

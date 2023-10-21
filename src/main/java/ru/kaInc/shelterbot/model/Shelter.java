@@ -27,10 +27,10 @@ public class Shelter {
     @Enumerated(EnumType.STRING)
     private Type type;
 
-    @OneToMany
-    private Set<Volunteer> volunteerSet;
+    @OneToMany(mappedBy = "shelter")
+    private Set<Volunteer> volunteers;
 
-    @OneToMany
+    @OneToMany(mappedBy = "shelter")
     private Set<User> users;
 
     @Override
