@@ -30,11 +30,11 @@ public class User {
 
     @ManyToOne()
     @JoinColumn(name = "shelter_id")
-    private Shelter shelterId;
+    private Shelter shelter;
 
     @ManyToOne()
     @JoinColumn(name = "volunteer_id")
-    private Volunteer volunteerId;
+    private Volunteer volunteer;
 
     @Column(name = "is_adopter")
     private Boolean isAdopter;
