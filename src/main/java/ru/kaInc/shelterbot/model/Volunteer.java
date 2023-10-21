@@ -2,7 +2,6 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ru.kaInc.shelterbot.ShelterBotApplication;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -26,42 +25,6 @@ public class Volunteer {
     @ManyToOne()
     @Column(name = "shelter_id")
     private Shelter shelter;
-
-    public Volunteer() {
-
-    }
-
-    public UUID getId() {
-        return id;
-    }
-
-    public void setId(UUID id) {
-        this.id = id;
-    }
-
-    public Long getChatId() {
-        return chatId;
-    }
-
-    public void setChatId(Long chatId) {
-        this.chatId = chatId;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public Shelter getShelterId() {
-        return shelter;
-    }
-
-    public void setShelterId(Shelter shelterId) {
-        this.shelter = shelterId;
-    }
 
     @Override
     public boolean equals(Object o) {
