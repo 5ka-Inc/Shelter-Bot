@@ -6,11 +6,14 @@ import lombok.Data;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * @author Эпенди
+ *
+ */
 @Entity
 @Data
-@Table(name = "volunteers")
-public class Volunteer {
-
+@Table(name = "users")
+public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
@@ -22,16 +25,30 @@ public class Volunteer {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "phone")
+    private String phone;
+
     @ManyToOne()
     @JoinColumn(name = "shelter_id")
     private Shelter shelter;
+
+    @ManyToOne()
+    @JoinColumn(name = "volunteer_id")
+    private Volunteer volunteer;
+
+    @Column(name = "is_adopter")
+    private Boolean isAdopter;
+
+
+    public User() {
+    }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        Volunteer volunteer = (Volunteer) o;
-        return Objects.equals(id, volunteer.id);
+        User user = (User) o;
+        return Objects.equals(id, user.id);
     }
 
     @Override
