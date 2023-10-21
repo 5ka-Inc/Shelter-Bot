@@ -5,6 +5,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.util.Objects;
+import java.util.Set;
 import java.util.UUID;
 
 @Entity
@@ -25,6 +26,12 @@ public class Shelter {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type;
+
+    @OneToMany
+    private Set<Volunteer> volunteerSet;
+
+    @OneToMany
+    private Set<User> users;
 
     @Override
     public boolean equals(Object o) {
