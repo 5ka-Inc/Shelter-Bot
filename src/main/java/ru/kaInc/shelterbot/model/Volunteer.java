@@ -23,7 +23,7 @@ public class Volunteer {
     private String name;
 
     @ManyToOne()
-    @Column(name = "shelter_id")
+    @JoinColumn(name = "shelter_id")
     private Shelter shelter;
 
     @Override

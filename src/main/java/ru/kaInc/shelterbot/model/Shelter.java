@@ -2,13 +2,14 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.data.annotation.Id;
+import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "shelters")
 public class Shelter {
 
@@ -20,10 +21,9 @@ public class Shelter {
     @Column(name = "name")
     private String name;
 
-    @OneToMany()
-    @JoinColumn(name = "user_id")
-    @JoinColumn(name = "volonteer_id")
+
     @Column(name = "type")
+    @Enumerated(EnumType.STRING)
     private Type type;
 
     @Override
@@ -38,4 +38,5 @@ public class Shelter {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }
