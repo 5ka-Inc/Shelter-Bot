@@ -2,20 +2,21 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import ru.kaInc.shelterbot.model.enums.Role;
 
 import java.util.Objects;
 
-
 /**
  * @author Эпенди
- *
  */
 @Entity
 @Data
+@NoArgsConstructor
 @Table(name = "users")
 public class User {
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -32,20 +33,12 @@ public class User {
     @JoinColumn(name = "shelter_id")
     private Shelter shelter;
 
-    @ManyToOne()
-    @JoinColumn(name = "volunteer_id")
-    private Volunteer volunteer;
-
     @Column(name = "is_adopter")
     private Boolean isAdopter;
 
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
-
-    public User() {
-
-    }
 
     @Override
     public boolean equals(Object o) {

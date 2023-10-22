@@ -1,11 +1,15 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
+import ru.kaInc.shelterbot.model.enums.Role;
 import ru.kaInc.shelterbot.repo.UserRepo;
 import ru.kaInc.shelterbot.service.UserService;
+
+import java.util.List;
 
 @Service
 public class UserServiceImpl implements UserService {
@@ -40,7 +44,7 @@ public class UserServiceImpl implements UserService {
         newUser.setName(user.username());
         newUser.setChatId(chatId);
         newUser.setIsAdopter(false);
-
+        newUser.setRole(Role.USER);
 
         return userRepo.save(newUser);
     }
@@ -48,5 +52,47 @@ public class UserServiceImpl implements UserService {
     @Override
     public boolean isUserPresent(Long id) {
         return userRepo.existsById(id);
+    }
+
+    @Override
+    public User findById(Long id) {
+        return userRepo.findById(id).orElseThrow(
+                () -> new EntityNotFoundException(String.format("User with id %s not found", id)));
+    }
+
+    @Override
+    public List<User> findUsersByRole(String role) {
+
+        List<User> foundUsers = userRepo.findUsersByRole(role);
+
+        if (foundUsers.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Not found users with role %s", role));
+        }
+        return foundUsers;
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userRepo.findAll();
+    }
+
+    @Override
+    public User updateUser(User user) {
+
+        User foundUser = findById(user.getId());
+
+        foundUser.setName(user.getName());
+        foundUser.setPhone(user.getPhone());
+        foundUser.setRole(user.getRole());
+
+        return userRepo.save(foundUser);
+    }
+
+    @Override
+    public void deleteUser(Long id) {
+        if (userRepo.findById(id).isEmpty()) {
+            throw new EntityNotFoundException(String.format("User with id %s not found", id));
+        }
+        userRepo.deleteById(id);
     }
 }

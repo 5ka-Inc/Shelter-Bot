@@ -6,7 +6,6 @@ import lombok.NoArgsConstructor;
 
 import java.util.Objects;
 import java.util.Set;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -15,9 +14,9 @@ import java.util.UUID;
 public class Shelter {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "name")
     private String name;
@@ -26,9 +25,6 @@ public class Shelter {
     @Column(name = "type")
     @Enumerated(EnumType.STRING)
     private Type type;
-
-    @OneToMany(mappedBy = "shelter")
-    private Set<Volunteer> volunteers;
 
     @OneToMany(mappedBy = "shelter")
     private Set<User> users;
@@ -45,5 +41,4 @@ public class Shelter {
     public int hashCode() {
         return Objects.hash(id);
     }
-
 }
