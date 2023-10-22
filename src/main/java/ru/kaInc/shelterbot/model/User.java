@@ -40,8 +40,12 @@ public class User {
     @Column(name = "is_adopter")
     private Boolean isAdopter;
 
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public User() {
+
     }
 
     @Override
