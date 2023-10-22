@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
+import ru.kaInc.shelterbot.service.KeyboardBasic;
 import ru.kaInc.shelterbot.service.UpdateHubService;
 import ru.kaInc.shelterbot.service.UserService;
 
@@ -14,10 +15,12 @@ import java.util.List;
 public class UpdateHubServiceImpl implements UpdateHubService {
 
     UserService userService;
+    KeyboardBasic keyboardBasic;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
 
-    public UpdateHubServiceImpl(UserService userService) {
+    public UpdateHubServiceImpl(UserService userService, KeyboardBasic keyboardBasic) {
         this.userService = userService;
+        this.keyboardBasic = keyboardBasic;
     }
 
     public void process(List<Update> updates) {
@@ -28,7 +31,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
         updates.forEach(update -> {
             try {
-                processStart(update);
+                processStart(update, updates);
             } catch (NullPointerException e) {
                 logger.error(e.getMessage());
             }
@@ -50,9 +53,10 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     }
 
     @Override
-    public void processStart(Update update) {
+    public void processStart(Update update, List<Update> updates) {
         if (update.message().text().equals("/start")) {
             addUserIfNew(update);
+            keyboardBasic.processCommands(updates);
         }
     }
 }

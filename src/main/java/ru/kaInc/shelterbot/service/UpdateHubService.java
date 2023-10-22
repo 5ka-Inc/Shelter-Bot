@@ -3,6 +3,8 @@ package ru.kaInc.shelterbot.service;
 import com.pengrad.telegrambot.model.Update;
 import ru.kaInc.shelterbot.model.User;
 
+import java.util.List;
+
 
 public interface UpdateHubService {
 
@@ -10,7 +12,5 @@ public interface UpdateHubService {
 
     User createNewUser(Long id, Long chatId, String name);
 
-    void processStart(Update update);
-
-
+    void processStart(Update update, List<Update> updates);
 }
