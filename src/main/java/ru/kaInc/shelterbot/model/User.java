@@ -2,6 +2,7 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ru.kaInc.shelterbot.model.enums.Role;
 
 import java.util.Objects;
 import java.util.UUID;
@@ -39,8 +40,12 @@ public class User {
     @Column(name = "is_adopter")
     private Boolean isAdopter;
 
+    @Column(name = "role")
+    @Enumerated(EnumType.STRING)
+    private Role role;
 
     public User() {
+
     }
 
     @Override
