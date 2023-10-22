@@ -4,6 +4,7 @@ import com.pengrad.telegrambot.model.Update;
 
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
+import ru.kaInc.shelterbot.service.implementation.BotUpdatesListener;
 
 import java.util.ArrayList;
 

@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Objects;
-import java.util.UUID;
+
 
 /**
  * @author Эпенди
@@ -15,9 +15,8 @@ import java.util.UUID;
 @Table(name = "users")
 public class User {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "chat_id")
     private Long chatId;
@@ -53,6 +52,6 @@ public class User {
 
     @Override
     public int hashCode() {
-        return Objects.hash(id);
+        return Long.hashCode(id);
     }
 }
