@@ -2,6 +2,8 @@ package ru.kaInc.shelterbot.service;
 
 import ru.kaInc.shelterbot.model.User;
 
+import java.util.List;
+
 
 public interface UserService {
     /**
@@ -31,4 +33,14 @@ public interface UserService {
      * @return true if user is found in DB
      */
     boolean isUserPresent(Long id);
+
+    User findById(Long id);
+
+    List<User> findUsersByRole(String role);
+
+    List<User> findAll();
+
+    User updateUser(User user);
+
+    void deleteUser(Long id);
 }
