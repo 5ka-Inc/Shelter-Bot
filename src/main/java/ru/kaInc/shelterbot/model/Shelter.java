@@ -3,6 +3,7 @@ package ru.kaInc.shelterbot.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.kaInc.shelterbot.model.enums.Type;
 
 import java.util.Objects;
 import java.util.Set;
