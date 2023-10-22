@@ -32,3 +32,18 @@ CREATE TABLE volunteers
 
     CONSTRAINT volunteer_pk PRIMARY KEY (id)
 );
+
+-- changeset vasyan:1
+
+CREATE TABLE users
+(
+    id           BIGINT,
+    chat_id      BIGINT NOT NULL,
+    name         TEXT,
+    phone        TEXT,
+    shelter_id   UUID,
+    volunteer_id UUID,
+    is_adopter   BOOLEAN,
+
+    CONSTRAINT user_pk PRIMARY KEY (id)
+);
