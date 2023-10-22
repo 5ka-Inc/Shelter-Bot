@@ -30,7 +30,7 @@ public class BotUpdatesListener implements UpdatesListener {
 
     @Override
     public int process(List<Update> list) {
-        updateHubService.process(list);
+        updateHubService.process(list, telegramBot);
         return UpdatesListener.CONFIRMED_UPDATES_ALL;
     }
 

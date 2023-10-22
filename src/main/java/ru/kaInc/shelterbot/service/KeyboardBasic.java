@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.service;
 
+import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 
 import java.util.List;
@@ -10,7 +11,7 @@ import java.util.List;
  */
 
 public interface KeyboardBasic {
-    void processCommands(List<Update> update);
+    void processCommands(List<Update> update, TelegramBot telegramBot);
 
     void callVolunteer();
 }

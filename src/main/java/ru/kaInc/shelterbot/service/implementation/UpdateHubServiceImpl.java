@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,7 +24,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         this.keyboardBasic = keyboardBasic;
     }
 
-    public void process(List<Update> updates) {
+    public void process(List<Update> updates, TelegramBot telegramBot) {
         if (updates == null || updates.isEmpty()) {
             logger.warn("Updates is null or empty");
             return;
@@ -31,7 +32,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
         updates.forEach(update -> {
             try {
-                processStart(update, updates);
+                processStart(update, updates, telegramBot);
             } catch (NullPointerException e) {
                 logger.error(e.getMessage());
             }
@@ -63,10 +64,10 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     }
 
     @Override
-    public void processStart(Update update, List<Update> updates) {
+    public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
         if (update.message().text().equals("/start")) {
             addUserIfNew(update);
-            keyboardBasic.processCommands(updates);
+            keyboardBasic.processCommands(updates, telegramBot);
         }
     }
 }
