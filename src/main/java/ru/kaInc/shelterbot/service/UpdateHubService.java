@@ -12,5 +12,7 @@ public interface UpdateHubService {
 
     User createNewUser(Long id, Long chatId, String name);
 
+    User createNewUSer(com.pengrad.telegrambot.model.User user, Long chatId);
+
     void processStart(Update update, List<Update> updates);
 }

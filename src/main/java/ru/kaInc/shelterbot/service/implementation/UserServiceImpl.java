@@ -31,6 +31,20 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public User addNewUser(com.pengrad.telegrambot.model.User user, Long chatId) {
+        User newUser = new User();
+
+        newUser.setId(user.id());
+        newUser.setName(user.username());
+        newUser.setChatId(chatId);
+        newUser.setIsAdopter(false);
+
+        logger.info("User {} {} added", newUser.getName(), newUser.getId());
+
+        return userRepo.save(newUser);
+    }
+
+    @Override
     public boolean isUserPresent(Long id) {
         return userRepo.existsById(id);
     }

@@ -43,13 +43,18 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     @Override
     public void addUserIfNew(Update update) {
         if (!userService.isUserPresent(update.message().from().id())) {
-            createNewUser(update.message().from().id(), update.message().chat().id(), update.message().from().username());
+            createNewUSer(update.message().from(), update.message().chat().id());
         }
     }
 
     @Override
     public User createNewUser(Long id, Long chatId, String name) {
         return userService.addNewUser(id, chatId, name);
+    }
+
+    @Override
+    public User createNewUSer(com.pengrad.telegrambot.model.User user, Long chatId) {
+        return userService.addNewUser(user, chatId);
     }
 
     @Override
