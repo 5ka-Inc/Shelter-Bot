@@ -49,12 +49,17 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public User createNewUser(Long id, Long chatId, String name) {
-        return userService.addNewUser(id, chatId, name);
+        User newUser = userService.addNewUser(id, chatId, name);
+        logger.info("Added {} {}", newUser.getName(), newUser.getId());
+        return newUser;
+
     }
 
     @Override
     public User createNewUSer(com.pengrad.telegrambot.model.User user, Long chatId) {
-        return userService.addNewUser(user, chatId);
+        User newUser = userService.addNewUser(user, chatId);
+        logger.info("Added {} {}", newUser.getName(), newUser.getId());
+        return newUser;
     }
 
     @Override

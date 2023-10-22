@@ -18,6 +18,8 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public User addNewUser(Long id, long chatId, String name) {
+        logger.debug("Creating {} {}", name, id);
+
         User user = new User();
 
         user.setId(id);
@@ -25,13 +27,13 @@ public class UserServiceImpl implements UserService {
         user.setChatId(chatId);
         user.setIsAdopter(false);
 
-        logger.info("User {} {} added", name, id);
-
         return userRepo.save(user);
     }
 
     @Override
     public User addNewUser(com.pengrad.telegrambot.model.User user, Long chatId) {
+        logger.debug("Creating {} {}", user.username(), user.id());
+
         User newUser = new User();
 
         newUser.setId(user.id());
@@ -39,7 +41,6 @@ public class UserServiceImpl implements UserService {
         newUser.setChatId(chatId);
         newUser.setIsAdopter(false);
 
-        logger.info("User {} {} added", newUser.getName(), newUser.getId());
 
         return userRepo.save(newUser);
     }
