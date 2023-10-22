@@ -33,6 +33,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         updates.forEach(update -> {
             try {
                 processStart(update, updates, telegramBot);
+
             } catch (NullPointerException e) {
                 logger.error(e.getMessage());
             }
@@ -43,6 +44,15 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public void addUserIfNew(Update update) {
+        if (update == null) {
+            logger.warn("Got null update in {}", Thread.currentThread().getStackTrace()[2].getMethodName());
+            return;
+        }
+        if (update.message().from() == null) {
+            logger.warn("Got null user in {}", Thread.currentThread().getStackTrace()[2].getMethodName());
+            return;
+        }
+
         if (!userService.isUserPresent(update.message().from().id())) {
             createNewUSer(update.message().from(), update.message().chat().id());
         }
