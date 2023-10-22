@@ -2,6 +2,7 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ru.kaInc.shelterbot.model.enums.Role;
 
 import java.util.Objects;
 import java.util.UUID;

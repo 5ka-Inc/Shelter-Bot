@@ -3,3 +3,5 @@ databaseChangeLog:
       file: liquibase/scripts/V_1_0__create_tables.sql
   - include:
       file: liquibase/scripts/V_1_1__add_fk.sql
+  - include:
+      file: liquibase/scripts/V_1_2__create_column.sql
