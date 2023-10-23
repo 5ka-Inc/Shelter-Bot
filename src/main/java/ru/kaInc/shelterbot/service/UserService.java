@@ -12,17 +12,17 @@ public interface UserService {
      * @param id     telegtram userId will be used as id in bot's DB. Must not be null.
      * @param chatId id of chat with this user. Must not be null.
      * @param name   by default it is telegram username. Later volunteer can change this value to real name, if user going to take a pet.
-     * @return created user
+     * @return created user or null if id or chatId is null
      * @see com.pengrad.telegrambot.model.User
      */
-    User addNewUser(Long id, long chatId, String name);
+    User addNewUser(Long id, Long chatId, String name);
 
     /**
      * Creates new user in DB via user repository. ChatId must not be null.
      *
      * @param user   telegram user object. Method will extract its "id" and "username" to use as fields of new user object.
      * @param chatId id of chat with this user. Must not be null.
-     * @return created user
+     * @return created user or null if chatId is null
      * @see com.pengrad.telegrambot.model.User
      */
     User addNewUser(com.pengrad.telegrambot.model.User user, Long chatId);
