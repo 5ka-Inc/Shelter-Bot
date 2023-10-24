@@ -13,6 +13,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.kaInc.shelterbot.model.User;
+import ru.kaInc.shelterbot.model.enums.Role;
 import ru.kaInc.shelterbot.service.UserService;
 
 import java.util.List;
@@ -47,7 +48,7 @@ public class UserController {
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = User.class))}),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")})
-    @GetMapping("/{id}")
+    @GetMapping("id/{id}")
     public ResponseEntity<User> findUserById(@Parameter(description = "Идентификатор пользователя")
                                              @PathVariable("id") Long id) {
         User foundUser = userService.findById(id);
@@ -63,9 +64,9 @@ public class UserController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(implementation = User.class)))),
             @ApiResponse(responseCode = "404", description = "Пользователи не найдены")})
-    @GetMapping("/{role}")
+    @GetMapping("role/{role}")
     public ResponseEntity<List<User>> getUsersByRole(@Parameter(description = "Искомая роль (из enum Role)")
-                                                     @PathVariable("role") String role) {
+                                                     @PathVariable("role") Role role) {
         List<User> foundUsers = userService.findUsersByRole(role);
         if (foundUsers == null) {
             return ResponseEntity.notFound().build();
@@ -93,7 +94,7 @@ public class UserController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь успешно удален"),
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")})
-    @DeleteMapping("{id}")
+    @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deleteUser(@Parameter(description = "Идентификатор пользователя")
                                            @PathVariable Long id) {
         User currentUser = userService.findById(id);
