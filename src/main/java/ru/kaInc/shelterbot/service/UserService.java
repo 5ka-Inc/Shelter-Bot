@@ -1,6 +1,7 @@
 package ru.kaInc.shelterbot.service;
 
 import ru.kaInc.shelterbot.model.User;
+import ru.kaInc.shelterbot.model.enums.Role;
 
 import java.util.List;
 
@@ -36,7 +37,7 @@ public interface UserService {
 
     User findById(Long id);
 
-    List<User> findUsersByRole(String role);
+    List<User> findUsersByRole(Role role);
 
     List<User> findAll();
 
