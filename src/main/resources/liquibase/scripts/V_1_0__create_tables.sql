@@ -21,3 +21,29 @@ CREATE TABLE shelters
 
     CONSTRAINT shelter_pk PRIMARY KEY (id)
 );
+
+-- changeset vasyan:1
+
+CREATE TABLE photo
+(
+    id        uuid PRIMARY KEY ,
+    data      bytea,
+    report_id uuid
+
+
+);
+
+CREATE TABLE reports
+(
+    id              uuid PRIMARY KEY,
+    date            timestamp,
+    diet            text,
+    health          text,
+    behavior        text,
+    is_report_valid bool,
+    photo_id        uuid,
+    user_id         bigint
+
+
+);
+

@@ -34,11 +34,11 @@ public class Report {
     private boolean isReportValid;
 
     @OneToMany(mappedBy = "report")
-    @Column(name = "photo")
+    @Column(name = "photo_id")
     private Collection<Photo> photo;
 
     @ManyToOne
-    @Column(name = "user_id")
+    @JoinColumn(name = "user_id")
     private User user;
 
     @Override
