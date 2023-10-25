@@ -5,10 +5,8 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
 import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.SendResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
 
@@ -21,14 +19,14 @@ public class KeyboardBasicIml implements KeyboardBasic {
 
 
     @Override
-    public void processCommands(List<Update> update, TelegramBot telegramBot) {
-        if (update == null || update.isEmpty()) {
+    public void processCommands(List<Update> updates, TelegramBot telegramBot) {
+        if (updates == null || updates.isEmpty()) {
             logger.warn("Updates is null or empty");
             return;
         }
-        update.forEach(update1 -> {
-            Long chatId = update1.message().chat().id();
-            createButtons(chatId, telegramBot);
+        updates.forEach(update -> {
+                    Long chatId = update.message().chat().id();
+                    createButtons(chatId, telegramBot);
         });
     }
 
@@ -41,19 +39,19 @@ public class KeyboardBasicIml implements KeyboardBasic {
 
         // Создание разметки для кнопок
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
-                new InlineKeyboardButton[] {
+                new InlineKeyboardButton[]{
                         button1.callbackData("callback_data_1"),
-                        button2.callbackData("callback_data_2"),
+                        button2.callbackData("callback_data_2")
+                },
+                new InlineKeyboardButton[] {
                         button3.callbackData("callback_data_3")
                 }
         );
-
         // Создание сообщения с кнопками
         SendMessage request = new SendMessage(chatId, "Выберите приют");
         request.replyMarkup(markup);
         telegramBot.execute(request);
     }
-
     @Override
     public void callVolunteer() {
 
