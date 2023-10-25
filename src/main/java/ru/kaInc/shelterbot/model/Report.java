@@ -30,10 +30,11 @@ public class Report {
     @Column(name = "behavior")
     private String behavior;
 
-    @Column(name = "is_report-valid")
+    @Column(name = "is_report_valid")
     private boolean isReportValid;
 
     @OneToMany(mappedBy = "report")
+    @Column(name = "photo")
     private Collection<Photo> photo;
 
     @ManyToOne
