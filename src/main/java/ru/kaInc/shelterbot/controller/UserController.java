@@ -24,7 +24,7 @@ import java.util.List;
 @Tag(name = "Пользователи", description = "Операции с пользователями")
 public class UserController {
 
-    private final UserService userService;
+    private final UserService service;
 
     @Operation(summary = "Получить всех пользователей")
     @ApiResponses(value = {
@@ -34,12 +34,11 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Записи не найдены")})
     @GetMapping
     public ResponseEntity<List<User>> findAll() {
-        List<User> users = userService.findAll();
+        List<User> users = service.findAll();
         if (users.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(users);
-
     }
 
     @Operation(summary = "Получить пользователя по id")
@@ -51,7 +50,7 @@ public class UserController {
     @GetMapping("id/{id}")
     public ResponseEntity<User> findUserById(@Parameter(description = "Идентификатор пользователя")
                                              @PathVariable("id") Long id) {
-        User foundUser = userService.findById(id);
+        User foundUser = service.findById(id);
         if (foundUser == null) {
             return ResponseEntity.notFound().build();
         }
@@ -67,7 +66,7 @@ public class UserController {
     @GetMapping("role/{role}")
     public ResponseEntity<List<User>> getUsersByRole(@Parameter(description = "Искомая роль (из enum Role)")
                                                      @PathVariable("role") Role role) {
-        List<User> foundUsers = userService.findUsersByRole(role);
+        List<User> foundUsers = service.findUsersByRole(role);
         if (foundUsers == null) {
             return ResponseEntity.notFound().build();
         }
@@ -82,11 +81,11 @@ public class UserController {
             @ApiResponse(responseCode = "404", description = "Пользователь не найден")})
     @PutMapping
     public ResponseEntity<?> changeUser(@RequestBody User user) {
-        User currentUser = userService.findById(user.getId());
+        User currentUser = service.findById(user.getId());
         if (currentUser == null) {
             return ResponseEntity.notFound().build();
         }
-        User updatedUser = userService.updateUser(user);
+        User updatedUser = service.updateUser(user);
         return ResponseEntity.ok(updatedUser);
     }
 
@@ -97,11 +96,11 @@ public class UserController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deleteUser(@Parameter(description = "Идентификатор пользователя")
                                            @PathVariable Long id) {
-        User currentUser = userService.findById(id);
+        User currentUser = service.findById(id);
         if (currentUser == null) {
             return ResponseEntity.notFound().build();
         }
-        userService.deleteUser(id);
+        service.deleteUser(id);
         return ResponseEntity.ok().build();
     }
 }
