@@ -2,8 +2,6 @@ package ru.kaInc.shelterbot.service.implementation;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
-import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
-import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,12 +42,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
 
                 if (update.message() != null) {
                     /* Если сообщение присутствует в обновлении, создает клавиатуру с помощью CustomKeyboard и отправляет ее через telegramBot */
-                    List<List<String>> buttonLabels = Arrays.asList(
-                            Arrays.asList("Button 1", "Button 2"),
-                            Arrays.asList("Button 3", "Button 4")
-                    );
-                    SendMessage message = CustomKeyboard.createKeyboard(chatId, "Choose an option:", buttonLabels);
-                    telegramBot.execute(message);
+                    createButtons(chatId, telegramBot);
                 } else if (update.callbackQuery() != null) { /* Если запрос обратного вызова присутствует в обновлении, добавляет обновление в callbackUpdates */
                     callbackUpdates.add(update);
                 }
@@ -69,28 +62,43 @@ public class KeyboardBasicIml implements KeyboardBasic {
         return null;
     }
 
+//    public void createButtons(long chatId, TelegramBot telegramBot) {
+//
+//        // Создание кнопок
+//        InlineKeyboardButton button1 = new InlineKeyboardButton("Приют для кошек");
+//        InlineKeyboardButton button2 = new InlineKeyboardButton("Приют для собак");
+//        InlineKeyboardButton button3 = new InlineKeyboardButton("Позвать волонтера");
+//
+//        // Создание разметки для кнопок
+//        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
+//                new InlineKeyboardButton[]{
+//                        button1.callbackData("Кошачий приют"),
+//                        button2.callbackData("Басячий приют")
+//                },
+//                new InlineKeyboardButton[]{
+//                        button3.callbackData("Вызов волонтера")
+//                }
+//        );
+//        // Создание сообщения с кнопками
+//        SendMessage request = new SendMessage(chatId, "Выберите приют");
+//        request.replyMarkup(markup);
+//        telegramBot.execute(request);
+//    }
 
     public void createButtons(long chatId, TelegramBot telegramBot) {
+        List<List<String>> buttonLabels = new ArrayList<>();
+        List<List<String>> callbackData = new ArrayList<>();
 
-        // Создание кнопок
-        InlineKeyboardButton button1 = new InlineKeyboardButton("Приют для кошек");
-        InlineKeyboardButton button2 = new InlineKeyboardButton("Приют для собак");
-        InlineKeyboardButton button3 = new InlineKeyboardButton("Позвать волонтера");
+        // Создание меток и данных обратного вызова для кнопок
+        buttonLabels.add(Arrays.asList("Приют для кошек", "Приют для собак"));
+        buttonLabels.add(Collections.singletonList("Позвать волонтера"));
 
-        // Создание разметки для кнопок
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
-                new InlineKeyboardButton[]{
-                        button1.callbackData("callback_data_1"),
-                        button2.callbackData("callback_data_2")
-                },
-                new InlineKeyboardButton[]{
-                        button3.callbackData("callback_data_3")
-                }
-        );
-        // Создание сообщения с кнопками
-        SendMessage request = new SendMessage(chatId, "Выберите приют");
-        request.replyMarkup(markup);
-        telegramBot.execute(request);
+        callbackData.add(Arrays.asList("Кошачий приют", "Собачий приют"));
+        callbackData.add(Collections.singletonList("Вызов волонтера"));
+
+        // Создание клавиатуры с помощью CustomKeyboard.createKeyboard
+        SendMessage message = CustomKeyboard.createKeyboard(chatId, "Выберите приют:", buttonLabels, callbackData);
+        telegramBot.execute(message);
     }
 
     @Override

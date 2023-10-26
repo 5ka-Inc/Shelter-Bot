@@ -1,8 +1,6 @@
 package ru.kaInc.shelterbot.utils;
 
-import com.pengrad.telegrambot.model.request.Keyboard;
-import com.pengrad.telegrambot.model.request.KeyboardButton;
-import com.pengrad.telegrambot.model.request.ReplyKeyboardMarkup;
+import com.pengrad.telegrambot.model.request.*;
 import com.pengrad.telegrambot.request.SendMessage;
 
 import java.util.ArrayList;
@@ -35,6 +33,21 @@ public class CustomKeyboard {
         }
         Keyboard replyKeyboard = new ReplyKeyboardMarkup(keyboardRows.toArray(new KeyboardButton[0][0]));
         return new SendMessage(String.valueOf(chatId), text).replyMarkup(replyKeyboard);
+    }
+
+    public static SendMessage createKeyboard(long chatId, String text, List<List<String>> buttonLabels, List<List<String>> callbackData) {
+        List<InlineKeyboardButton[]> keyboardRows = new ArrayList<>();
+        for (int i = 0; i < buttonLabels.size(); i++) {
+            List<String> rowLabels = buttonLabels.get(i);
+            List<String> rowData = callbackData.get(i);
+            InlineKeyboardButton[] row = new InlineKeyboardButton[rowLabels.size()];
+            for (int j = 0; j < rowLabels.size(); j++) {
+                row[j] = new InlineKeyboardButton(rowLabels.get(j)).callbackData(rowData.get(j));
+            }
+            keyboardRows.add(row);
+        }
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(keyboardRows.toArray(new InlineKeyboardButton[0][0]));
+        return new SendMessage(String.valueOf(chatId), text).replyMarkup(markup);
     }
 
 }

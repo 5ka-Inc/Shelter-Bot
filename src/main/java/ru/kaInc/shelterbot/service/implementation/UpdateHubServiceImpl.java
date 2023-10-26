@@ -25,7 +25,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     private static final String DEFAULT_RESPONSE = "Айнц - цвай - драй - ничего не панимай";
 
 
-    public UpdateHubServiceImpl(UserService userService, @Qualifier("keyboardBasicIml") KeyboardBasic keyboardBasic) {
+    public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
         this.userService = userService;
         this.keyboardBasic = keyboardBasic;
     }
@@ -35,17 +35,13 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             logger.warn("Updates is null or empty");
             return;
         }
-
         updates.forEach(update -> {
-            try {
+            if (update.message() != null && update.message().text() != null) {
                 processStart(update, updates, telegramBot);
-
-            } catch (NullPointerException e) {
-                logger.error(e.getMessage());
+            } else if (update.callbackQuery() != null) {
+                keyboardBasic.processCommands(updates, telegramBot);
             }
         });
-
-
     }
 
     @Override
