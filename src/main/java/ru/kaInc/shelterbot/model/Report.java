@@ -35,7 +35,7 @@ public class Report {
     private boolean isReportValid;
 
     @OneToOne(mappedBy = "report")
-    @Column(name = "photo_id")
+    @JoinColumn(name = "photo_id")
     private Photo photo;
 
     @ManyToOne

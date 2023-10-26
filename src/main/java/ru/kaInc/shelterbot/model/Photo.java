@@ -19,7 +19,7 @@ public class Photo {
     private byte[] data;
 
     @OneToOne
-    @Column(name = "report_id")
+    @JoinColumn(name = "report_id")
     private Report report;
 
     @Override

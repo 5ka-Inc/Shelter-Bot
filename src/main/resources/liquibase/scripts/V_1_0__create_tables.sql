@@ -26,23 +26,24 @@ CREATE TABLE shelters
 
 CREATE TABLE photo
 (
-    id        bigserial PRIMARY KEY ,
+    id        bigint PRIMARY KEY ,
     data      bytea,
-    report_id bigserial
+    report_id bigint
 
-
+    FOREIGN KEY (report_id) REFERENCES reports(id)
 );
 
 CREATE TABLE reports
 (
-    id              bigserial PRIMARY KEY,
+    id              bigint PRIMARY KEY,
     date            timestamp,
     diet            text,
     health          text,
     behavior        text,
     is_report_valid bool,
-    photo_id        bigserial,
+    photo_id        bigint,
     user_id         bigint
 
+    FOREIGN KEY (photo_id) REFERENCES photo(id)
 );
 
