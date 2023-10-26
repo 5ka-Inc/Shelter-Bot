@@ -16,6 +16,11 @@ import java.util.List;
 public class KeyboardBasicIml implements KeyboardBasic {
 
     private final Logger logger = LoggerFactory.getLogger(KeyboardBasicIml.class);
+    private final UniqueButtonCreation uniqueButtonCreation;
+
+    public KeyboardBasicIml(UniqueButtonCreation uniqueButtonCreation) {
+        this.uniqueButtonCreation = uniqueButtonCreation;
+    }
 
 
     @Override
@@ -24,9 +29,12 @@ public class KeyboardBasicIml implements KeyboardBasic {
             logger.warn("Updates is null or empty");
             return;
         }
+
         updates.forEach(update -> {
-                    Long chatId = update.message().chat().id();
-                    createButtons(chatId, telegramBot);
+            Long chatId = update.message().chat().id();
+            List<String> buttonsText = List.of("кнопкdsа 1", "кнопка2", "кнопка3ddd", "кнопка 4");
+            List<String> buttonCallBack = List.of("First", "Last", "asdadad", "Asdad");
+            uniqueButtonCreation.createButtons(chatId, telegramBot,"Текст сообшasdasdения", buttonsText, buttonCallBack);
         });
     }
 
@@ -52,6 +60,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
         request.replyMarkup(markup);
         telegramBot.execute(request);
     }
+
     @Override
     public void callVolunteer() {
 
