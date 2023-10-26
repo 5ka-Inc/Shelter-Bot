@@ -4,11 +4,8 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.security.Timestamp;
-import java.time.LocalDateTime;
-import java.util.Collection;
+import java.sql.Timestamp;
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Data
