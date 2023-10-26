@@ -11,15 +11,15 @@ import java.util.UUID;
 @Table(name = "photo")
 public class Photo {
     @Id
-    @GeneratedValue(strategy = GenerationType.UUID)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private UUID id;
+    private Long id;
 
     @Column(name = "data")
     private byte[] data;
 
-    @ManyToOne
-    @JoinColumn(name = "report_id")
+    @OneToOne
+    @Column(name = "report_id")
     private Report report;
 
     @Override

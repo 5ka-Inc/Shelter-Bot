@@ -26,24 +26,23 @@ CREATE TABLE shelters
 
 CREATE TABLE photo
 (
-    id        uuid PRIMARY KEY ,
+    id        bigserial PRIMARY KEY ,
     data      bytea,
-    report_id uuid
+    report_id bigserial
 
 
 );
 
 CREATE TABLE reports
 (
-    id              uuid PRIMARY KEY,
+    id              bigserial PRIMARY KEY,
     date            timestamp,
     diet            text,
     health          text,
     behavior        text,
     is_report_valid bool,
-    photo_id        uuid,
+    photo_id        bigserial,
     user_id         bigint
-
 
 );
 
