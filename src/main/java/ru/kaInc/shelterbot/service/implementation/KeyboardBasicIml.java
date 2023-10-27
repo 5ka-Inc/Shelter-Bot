@@ -12,17 +12,30 @@ import ru.kaInc.shelterbot.service.KeyboardBasic;
 
 import java.util.List;
 
+/**
+ * The KeyboardBasicIml class is an implementation of the KeyboardBasic interface and is responsible for handling keyboard interactions and creating unique inline keyboard buttons.
+ */
 @Service
 public class KeyboardBasicIml implements KeyboardBasic {
 
     private final Logger logger = LoggerFactory.getLogger(KeyboardBasicIml.class);
     private final UniqueButtonCreation uniqueButtonCreation;
 
+    /**
+     * Constructor for creating an instance of KeyboardBasicIml with a UniqueButtonCreation dependency.
+     *
+     * @param uniqueButtonCreation The UniqueButtonCreation instance used for creating unique inline keyboard buttons.
+     */
     public KeyboardBasicIml(UniqueButtonCreation uniqueButtonCreation) {
         this.uniqueButtonCreation = uniqueButtonCreation;
     }
 
-
+    /**
+     * Processes a list of updates, creates and sends unique inline keyboard buttons in response to each update to a specified chat.
+     *
+     * @param updates     A list of Telegram Update objects representing user interactions.
+     * @param telegramBot The TelegramBot instance used to send messages with inline keyboard buttons.
+     */
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
         if (updates == null || updates.isEmpty()) {
@@ -34,10 +47,16 @@ public class KeyboardBasicIml implements KeyboardBasic {
             Long chatId = update.message().chat().id();
             List<String> buttonsText = List.of("кнопкdsа 1", "кнопка2", "кнопка3ddd", "кнопка 4");
             List<String> buttonCallBack = List.of("First", "Last", "asdadad", "Asdad");
-            uniqueButtonCreation.createButtons(chatId, telegramBot,"Текст сообшasdasdения", buttonsText, buttonCallBack);
+            uniqueButtonCreation.createButtons(chatId, telegramBot, "Текст сообшasdasdения", buttonsText, buttonCallBack);
         });
     }
 
+    /**
+     * Creates a message with inline keyboard buttons for selecting a shelter type and sends it to the specified chat.
+     *
+     * @param chatId      The ID of the chat to which the message with buttons should be sent.
+     * @param telegramBot The TelegramBot instance used to send the message.
+     */
     public void createButtons(long chatId, TelegramBot telegramBot) {
 
         // Создание кнопок
@@ -51,7 +70,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
                         button1.callbackData("callback_data_1"),
                         button2.callbackData("callback_data_2")
                 },
-                new InlineKeyboardButton[] {
+                new InlineKeyboardButton[]{
                         button3.callbackData("callback_data_3")
                 }
         );
@@ -61,6 +80,9 @@ public class KeyboardBasicIml implements KeyboardBasic {
         telegramBot.execute(request);
     }
 
+    /**
+     * A placeholder method for handling the action of calling a volunteer.
+     */
     @Override
     public void callVolunteer() {
 

@@ -6,6 +6,9 @@ import lombok.Data;
 import java.util.Objects;
 import java.util.UUID;
 
+/**
+ * The Photo class represents a photo entity in the database. It is used to store binary image data associated with a report.
+ */
 @Entity
 @Data
 @Table(name = "photo")
@@ -21,6 +24,7 @@ public class Photo {
     @OneToOne
     @JoinColumn(name = "report_id")
     private Report report;
+
 
     @Override
     public boolean equals(Object o) {
