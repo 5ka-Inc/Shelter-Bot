@@ -2,8 +2,10 @@ package ru.kaInc.shelterbot.service.implementation;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
@@ -19,7 +21,11 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     KeyboardBasic keyboardBasic;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
 
-    public UpdateHubServiceImpl(UserService userService, KeyboardBasic keyboardBasic) {
+    private static final String START_COMMAND = "/start";
+    private static final String DEFAULT_RESPONSE = "Айнц - цвай - драй - ничего не панимай";
+
+
+    public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
         this.userService = userService;
         this.keyboardBasic = keyboardBasic;
     }
@@ -29,17 +35,13 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             logger.warn("Updates is null or empty");
             return;
         }
-
         updates.forEach(update -> {
-            try {
+            if (update.message() != null && update.message().text() != null) {
                 processStart(update, updates, telegramBot);
-
-            } catch (NullPointerException e) {
-                logger.error(e.getMessage());
+            } else if (update.callbackQuery() != null) {
+                keyboardBasic.processCommands(updates, telegramBot);
             }
         });
-
-
     }
 
     @Override
@@ -75,9 +77,15 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
-        if (update.message().text().equals("/start")) {
-            addUserIfNew(update);
-            keyboardBasic.processCommands(updates, telegramBot);
+        if (!update.message().text().equals(START_COMMAND)) {
+            SendMessage message = new SendMessage(update.message().chat().id(), DEFAULT_RESPONSE);
+            telegramBot.execute(message);
+
+            // Если задержка необходима, рассмотрите возможность асинхронного выполнения.
+            // Например, используя ScheduledExecutorService.
+            // Однако, если задержка не важна, рекомендуется убрать вызов Thread.sleep.
         }
+
+        keyboardBasic.processCommands(updates, telegramBot);
     }
 }

@@ -26,11 +26,9 @@ CREATE TABLE shelters
 
 CREATE TABLE photo
 (
-    id        bigint PRIMARY KEY ,
+    id        bigint PRIMARY KEY,
     data      bytea,
     report_id bigint
-
-    FOREIGN KEY (report_id) REFERENCES reports(id)
 );
 
 CREATE TABLE reports
@@ -43,7 +41,5 @@ CREATE TABLE reports
     is_report_valid bool,
     photo_id        bigint,
     user_id         bigint
-
-    FOREIGN KEY (photo_id) REFERENCES photo(id)
 );
 
