@@ -5,7 +5,6 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
