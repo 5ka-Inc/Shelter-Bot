@@ -15,7 +15,7 @@ import java.util.List;
 @Slf4j
 public class ShelterServiceImpl implements ShelterService {
 
-    private final ShelterRepo shelterRepo;
+    private ShelterRepo shelterRepo;
 
     @Override
     public Shelter createShelter(Shelter shelter) {
