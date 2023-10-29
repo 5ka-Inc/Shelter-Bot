@@ -1,7 +1,8 @@
 package ru.kaInc.shelterbot.command;
 
-import javafx.util.Pair;
+
 import org.apache.log4j.Logger;
+import org.springframework.data.util.Pair;
 
 public class Parser {
     private static final Logger log = Logger.getLogger(Parser.class);
@@ -20,15 +21,15 @@ public class Parser {
 
         if ("".equals(trimText)) return result;
         Pair<String, String> commandAndText = getDelimitedCommandFromText(trimText);
-        if (isCommand(commandAndText.getKey())) {
-            if (isCommandForMe(commandAndText.getKey())) {
-                String commandForParse = cutCommandFromFullText(commandAndText.getKey());
+        if (isCommand(commandAndText.getSecond())) {
+            if (isCommandForMe(commandAndText.getSecond())) {
+                String commandForParse = cutCommandFromFullText(commandAndText.getSecond());
                 Command commandFromText = getCommandFromText(commandForParse);
-                result.setText(commandAndText.getValue());
+                result.setText(commandAndText.getFirst());
                 result.setCommand(commandFromText);
             } else {
                 result.setCommand(Command.NOTFORME);
-                result.setText(commandAndText.getValue());
+                result.setText(commandAndText.getFirst());
             }
 
         }
