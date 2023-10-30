@@ -1,10 +1,10 @@
 package ru.kaInc.shelterbot.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Objects;
-import java.util.UUID;
 
 @Entity
 @Data
@@ -15,10 +15,11 @@ public class Photo {
     @Column(name = "id")
     private Long id;
 
+    @Lob
     @Column(name = "data")
     private byte[] data;
-
     @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "report_id")
     private Report report;
 
