@@ -21,17 +21,16 @@ public class KeyboardBasicIml implements KeyboardBasic {
     private final Logger logger = LoggerFactory.getLogger(KeyboardBasicIml.class);
     private final KeyboardBasicShelterOpsImpl keyboardBasicShelterOps;
 
+    public KeyboardBasicIml(KeyboardBasicShelterOpsImpl keyboardBasicShelterOps) {
+        this.keyboardBasicShelterOps = keyboardBasicShelterOps;
+    }
+
     /**
      * Processes a list of updates, creates and sends unique inline keyboard buttons in response to each update to a specified chat.
      *
      * @param updates     A list of Telegram Update objects representing user interactions.
      * @param telegramBot The TelegramBot instance used to send messages with inline keyboard buttons.
      */
-
-    public KeyboardBasicIml(KeyboardBasicShelterOpsImpl keyboardBasicShelterOps) {
-        this.keyboardBasicShelterOps = keyboardBasicShelterOps;
-    }
-
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
         if (updates == null || updates.isEmpty()) {
@@ -102,7 +101,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
         SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Выберите приют:", buttonLabels, callbackData);
         telegramBot.execute(message);
     }
-  
+
     @Override
     public void callVolunteer() {
 

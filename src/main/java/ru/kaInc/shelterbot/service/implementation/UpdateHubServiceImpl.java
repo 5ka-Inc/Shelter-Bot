@@ -30,7 +30,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
      * @param userService   The UserService used for managing user-related operations.
      * @param keyboardBasic The KeyboardBasic used for handling keyboard interactions.
      */
-   
+
     public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
         this.userService = userService;
         this.keyboardBasic = keyboardBasic;
@@ -137,6 +137,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             // Однако, если задержка не важна, рекомендуется убрать вызов Thread.sleep.
 
 //         keyboardBasic.processCommands(updates, telegramBot);
+        }
     }
 }
-}
+
