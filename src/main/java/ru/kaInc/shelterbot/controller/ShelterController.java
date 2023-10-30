@@ -18,6 +18,10 @@ import ru.kaInc.shelterbot.service.ShelterService;
 
 import java.util.List;
 
+/**
+ * The ShelterController class is a REST controller that handles shelter-related operations.
+ * It provides endpoints for retrieving, modifying, and deleting shelter records.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/shelter")
@@ -26,6 +30,11 @@ public class ShelterController {
 
     private final ShelterService service;
 
+    /**
+     * Retrieves a list of all shelters.
+     *
+     * @return ResponseEntity containing a list of Shelter objects if found, or a not found response.
+     */
     @Operation(summary = "Получить все приюты")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Записи найдены",
@@ -41,6 +50,12 @@ public class ShelterController {
         return ResponseEntity.ok(shelters);
     }
 
+    /**
+     * Retrieves a shelter by its unique identifier (id).
+     *
+     * @param id The unique identifier of the shelter.
+     * @return ResponseEntity containing the Shelter object if found, or a not found response.
+     */
     @Operation(summary = "Получить приют по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Приют найден",
@@ -57,6 +72,12 @@ public class ShelterController {
         return ResponseEntity.ok(foundShelter);
     }
 
+    /**
+     * Retrieves a list of shelters based on their type.
+     *
+     * @param type The type (from the Type enum) to filter shelters by.
+     * @return ResponseEntity containing a list of Shelter objects with the specified type if found, or a not found response.
+     */
     @Operation(summary = "Получить список приютов, в зависимости от типа")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Приюты найдены",
@@ -73,6 +94,12 @@ public class ShelterController {
         return ResponseEntity.ok(foundShelters);
     }
 
+    /**
+     * Modifies shelter data.
+     *
+     * @param shelter The Shelter object with modified data.
+     * @return ResponseEntity containing the updated Shelter object if successful, or a not found response if the shelter is not found.
+     */
     @Operation(summary = "Изменить данные приюта")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Данные изменены",
@@ -89,6 +116,12 @@ public class ShelterController {
         return ResponseEntity.ok(updatedShelter);
     }
 
+    /**
+     * Deletes a shelter by its unique identifier (id).
+     *
+     * @param id The unique identifier of the shelter to be deleted.
+     * @return ResponseEntity indicating the success of the deletion or a not found response if the shelter is not found.
+     */
     @Operation(summary = "Удалить приют")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Приют успешно удален"),

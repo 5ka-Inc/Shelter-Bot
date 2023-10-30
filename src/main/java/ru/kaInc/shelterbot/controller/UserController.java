@@ -18,6 +18,10 @@ import ru.kaInc.shelterbot.service.UserService;
 
 import java.util.List;
 
+/**
+ * The UserController class is a REST controller that handles user-related operations.
+ * It provides endpoints for retrieving, modifying, and deleting user records.
+ */
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/user")
@@ -26,6 +30,11 @@ public class UserController {
 
     private final UserService service;
 
+    /**
+     * Retrieves a list of all users.
+     *
+     * @return ResponseEntity containing a list of User objects if found, or a not found response.
+     */
     @Operation(summary = "Получить всех пользователей")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Записи найдены",
@@ -41,6 +50,12 @@ public class UserController {
         return ResponseEntity.ok(users);
     }
 
+    /**
+     * Retrieves a user by their unique identifier (id).
+     *
+     * @param id The unique identifier of the user.
+     * @return ResponseEntity containing the User object if found, or a not found response.
+     */
     @Operation(summary = "Получить пользователя по id")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь найден",
@@ -57,6 +72,12 @@ public class UserController {
         return ResponseEntity.ok(foundUser);
     }
 
+    /**
+     * Retrieves a list of users with a specific role.
+     *
+     * @param role The role (from the Role enum) to filter users by.
+     * @return ResponseEntity containing a list of User objects with the specified role if found, or a not found response.
+     */
     @Operation(summary = "Получить список пользователей с определенной ролью")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователи найдены",
@@ -73,6 +94,12 @@ public class UserController {
         return ResponseEntity.ok(foundUsers);
     }
 
+    /**
+     * Modifies user data.
+     *
+     * @param user The User object with modified data.
+     * @return ResponseEntity containing the updated User object if successful, or a not found response if the user is not found.
+     */
     @Operation(summary = "Изменить данные пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Данные изменены",
@@ -89,6 +116,12 @@ public class UserController {
         return ResponseEntity.ok(updatedUser);
     }
 
+    /**
+     * Deletes a user by their unique identifier (id).
+     *
+     * @param id The unique identifier of the user to be deleted.
+     * @return ResponseEntity indicating the success of the deletion or a not found response if the user is not found.
+     */
     @Operation(summary = "Удалить пользователя")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Пользователь успешно удален"),

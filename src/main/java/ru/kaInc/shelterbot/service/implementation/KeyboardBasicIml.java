@@ -12,18 +12,27 @@ import ru.kaInc.shelterbot.utils.CustomKeyboard;
 import java.util.*;
 
 
+/**
+ * The KeyboardBasicIml class is an implementation of the KeyboardBasic interface and is responsible for handling keyboard interactions and creating unique inline keyboard buttons.
+ */
 @Service
 public class KeyboardBasicIml implements KeyboardBasic {
 
     private final Logger logger = LoggerFactory.getLogger(KeyboardBasicIml.class);
     private final KeyboardBasicShelterOpsImpl keyboardBasicShelterOps;
 
+    /**
+     * Processes a list of updates, creates and sends unique inline keyboard buttons in response to each update to a specified chat.
+     *
+     * @param updates     A list of Telegram Update objects representing user interactions.
+     * @param telegramBot The TelegramBot instance used to send messages with inline keyboard buttons.
+     */
+
     public KeyboardBasicIml(KeyboardBasicShelterOpsImpl keyboardBasicShelterOps) {
         this.keyboardBasicShelterOps = keyboardBasicShelterOps;
     }
 
     @Override
-
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
         if (updates == null || updates.isEmpty()) {
             logger.warn("Updates is null or empty");
@@ -72,6 +81,12 @@ public class KeyboardBasicIml implements KeyboardBasic {
         return null;
     }
 
+    /**
+     * Creates a message with inline keyboard buttons for selecting a shelter type and sends it to the specified chat.
+     *
+     * @param chatId      The ID of the chat to which the message with buttons should be sent.
+     * @param telegramBot The TelegramBot instance used to send the message.
+     */
     public void createButtons(long chatId, TelegramBot telegramBot) {
         List<List<String>> buttonLabels = new ArrayList<>();
         List<List<String>> callbackData = new ArrayList<>();
