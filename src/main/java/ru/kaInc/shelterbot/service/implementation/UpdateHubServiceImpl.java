@@ -20,6 +20,9 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     KeyboardBasic keyboardBasic;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
 
+    private static final String START_COMMAND = "/start";
+    private static final String DEFAULT_RESPONSE = "Айнц - цвай - драй - ничего не панимай";
+
     public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
         this.userService = userService;
         this.keyboardBasic = keyboardBasic;
@@ -41,6 +44,15 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public void addUserIfNew(Update update) {
+        if (update == null) {
+            logger.warn("Got null update in {}", Thread.currentThread().getStackTrace()[2].getMethodName());
+            return;
+        }
+        if (update.message().from() == null) {
+            logger.warn("Got null user in {}", Thread.currentThread().getStackTrace()[2].getMethodName());
+            return;
+        }
+
         if (!userService.isUserPresent(update.message().from().id())) {
             createNewUSer(update.message().from(), update.message().chat().id());
         }
@@ -74,6 +86,15 @@ public class UpdateHubServiceImpl implements UpdateHubService {
                 logger.error(e.getMessage());
             }
             keyboardBasic.processCommands(updates, telegramBot);
-        }
+
+//         if (!update.message().text().equals(START_COMMAND)) {
+//             SendMessage message = new SendMessage(update.message().chat().id(), DEFAULT_RESPONSE);
+//             telegramBot.execute(message);
+
+            // Если задержка необходима, рассмотрите возможность асинхронного выполнения.
+            // Например, используя ScheduledExecutorService.
+            // Однако, если задержка не важна, рекомендуется убрать вызов Thread.sleep.
+
+//         keyboardBasic.processCommands(updates, telegramBot);
     }
 }
