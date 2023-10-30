@@ -23,7 +23,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     private static final String START_COMMAND = "/start";
     private static final String DEFAULT_RESPONSE = "Айнц - цвай - драй - ничего не панимай";
 
-
     public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
         this.userService = userService;
         this.keyboardBasic = keyboardBasic;
@@ -76,15 +75,26 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
-        if (!update.message().text().equals(START_COMMAND)) {
-            SendMessage message = new SendMessage(update.message().chat().id(), DEFAULT_RESPONSE);
+        if (update.message().text().equals("/start")) {
+            keyboardBasic.processCommands(updates, telegramBot);
+        } else {
+            SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай");
             telegramBot.execute(message);
+            try {
+                Thread.sleep(1000L);
+            } catch (InterruptedException e) {
+                logger.error(e.getMessage());
+            }
+            keyboardBasic.processCommands(updates, telegramBot);
+
+//         if (!update.message().text().equals(START_COMMAND)) {
+//             SendMessage message = new SendMessage(update.message().chat().id(), DEFAULT_RESPONSE);
+//             telegramBot.execute(message);
 
             // Если задержка необходима, рассмотрите возможность асинхронного выполнения.
             // Например, используя ScheduledExecutorService.
             // Однако, если задержка не важна, рекомендуется убрать вызов Thread.sleep.
-        }
 
-        keyboardBasic.processCommands(updates, telegramBot);
+//         keyboardBasic.processCommands(updates, telegramBot);
     }
 }

@@ -11,6 +11,7 @@ import ru.kaInc.shelterbot.utils.CustomKeyboard;
 
 import java.util.*;
 
+
 @Service
 public class KeyboardBasicIml implements KeyboardBasic {
 
@@ -22,11 +23,23 @@ public class KeyboardBasicIml implements KeyboardBasic {
     }
 
     @Override
+
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
         if (updates == null || updates.isEmpty()) {
             logger.warn("Updates is null or empty");
             return;
         }
+
+//         AtomicLong chatId = new AtomicLong();
+//         updates.forEach(update -> {
+//             if (update.message() != null) {
+//                 chatId.set(update.message().chat().id());
+//                 createButtons(chatId.get(), telegramBot);
+//             } else if (update.callbackQuery() != null) {
+//                 chatId.set(update.callbackQuery().message().chat().id());
+//                 keyboardBasicShelterOps.processCommands(updates, telegramBot);
+//             }
+//         });
 
         /* для хранения уникальных chatId и List<Update> для хранения обновлений с запросами обратного вызова */
         Set<Long> chatIds = new HashSet<>();
@@ -74,7 +87,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
         SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Выберите приют:", buttonLabels, callbackData);
         telegramBot.execute(message);
     }
-
+  
     @Override
     public void callVolunteer() {
 
