@@ -15,14 +15,11 @@ import java.util.*;
 public class KeyboardBasicIml implements KeyboardBasic {
 
     private final Logger logger = LoggerFactory.getLogger(KeyboardBasicIml.class);
-    private final UniqueButtonCreation uniqueButtonCreation;
     private final KeyboardBasicShelterOpsImpl keyboardBasicShelterOps;
 
-    public KeyboardBasicIml(UniqueButtonCreation uniqueButtonCreation, KeyboardBasicShelterOpsImpl keyboardBasicShelterOps) {
-        this.uniqueButtonCreation = uniqueButtonCreation;
+    public KeyboardBasicIml(KeyboardBasicShelterOpsImpl keyboardBasicShelterOps) {
         this.keyboardBasicShelterOps = keyboardBasicShelterOps;
     }
-
 
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
@@ -62,29 +59,6 @@ public class KeyboardBasicIml implements KeyboardBasic {
         return null;
     }
 
-//    public void createButtons(long chatId, TelegramBot telegramBot) {
-//
-//        // Создание кнопок
-//        InlineKeyboardButton button1 = new InlineKeyboardButton("Приют для кошек");
-//        InlineKeyboardButton button2 = new InlineKeyboardButton("Приют для собак");
-//        InlineKeyboardButton button3 = new InlineKeyboardButton("Позвать волонтера");
-//
-//        // Создание разметки для кнопок
-//        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
-//                new InlineKeyboardButton[]{
-//                        button1.callbackData("Кошачий приют"),
-//                        button2.callbackData("Басячий приют")
-//                },
-//                new InlineKeyboardButton[]{
-//                        button3.callbackData("Вызов волонтера")
-//                }
-//        );
-//        // Создание сообщения с кнопками
-//        SendMessage request = new SendMessage(chatId, "Выберите приют");
-//        request.replyMarkup(markup);
-//        telegramBot.execute(request);
-//    }
-
     public void createButtons(long chatId, TelegramBot telegramBot) {
         List<List<String>> buttonLabels = new ArrayList<>();
         List<List<String>> callbackData = new ArrayList<>();
@@ -97,7 +71,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
         callbackData.add(Collections.singletonList("Вызов волонтера"));
 
         // Создание клавиатуры с помощью CustomKeyboard.createKeyboard
-        SendMessage message = CustomKeyboard.createKeyboard(chatId, "Выберите приют:", buttonLabels, callbackData);
+        SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Выберите приют:", buttonLabels, callbackData);
         telegramBot.execute(message);
     }
 
