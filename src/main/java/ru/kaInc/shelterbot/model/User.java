@@ -8,7 +8,8 @@ import ru.kaInc.shelterbot.model.enums.Role;
 import java.util.Objects;
 
 /**
- * @author Эпенди
+ * The User class represents a user entity in the database. It stores information about a user,
+ * including their unique identifier (id), chat ID, name, phone number, associated shelter, adopter status, and role.
  */
 @Entity
 @Data
