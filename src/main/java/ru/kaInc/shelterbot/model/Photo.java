@@ -15,7 +15,12 @@ public class Photo {
     @Column(name = "id")
     private Long id;
 
-    @Lob
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Column(name = "media_type")
+    private String mediaType;
+
     @Column(name = "data")
     private byte[] data;
     @OneToOne

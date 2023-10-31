@@ -28,4 +28,8 @@ ALTER TABLE reports
 
 alter table reports
     add column date timestamp with time zone;
-
+--changeset Ependi:4.4
+ALTER TABLE photo
+    ADD COLUMN file_size BIGINT;
+ALTER TABLE photo
+    ADD COLUMN media_type TEXT;

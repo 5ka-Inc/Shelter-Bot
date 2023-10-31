@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.util.Objects;
 
 @Entity
@@ -17,7 +17,7 @@ public class Report {
     private Long id;
 
     @Column(name = "date")
-    private LocalDateTime date;
+    private Timestamp date;
 
     @Column(name = "diet")
     private String diet;
