@@ -54,7 +54,7 @@ public class PhotoController {
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Фото успешно изменено"),
             @ApiResponse(responseCode = "404", description = "Фото не найдено")})
-    @PutMapping(value = "refactor-photo/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @PostMapping(value = "refactor-photo/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> uploadPhoto(@Parameter(description = "Идентификатор фото")
                                             @PathVariable("id") Long id, @RequestParam MultipartFile multipartFile) throws IOException {
         if (multipartFile == null) {

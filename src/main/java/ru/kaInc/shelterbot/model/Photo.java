@@ -11,7 +11,6 @@ import java.util.Objects;
 @Table(name = "photo")
 public class Photo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -21,6 +20,7 @@ public class Photo {
     @Column(name = "media_type")
     private String mediaType;
 
+    @Lob
     @Column(name = "data")
     private byte[] data;
     @OneToOne
