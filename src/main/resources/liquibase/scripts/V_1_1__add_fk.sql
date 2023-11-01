@@ -4,7 +4,6 @@
 ALTER TABLE users
     ADD CONSTRAINT users_shelter_fk FOREIGN KEY (shelter_id) REFERENCES shelters (id) ON DELETE CASCADE;
 
-
 --changeset fifimova:3
 ALTER TABLE photo
     ADD CONSTRAINT report_fk FOREIGN KEY (report_id) REFERENCES reports (id) ON DELETE CASCADE;

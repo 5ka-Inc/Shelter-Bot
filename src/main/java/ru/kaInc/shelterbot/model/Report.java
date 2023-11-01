@@ -7,6 +7,10 @@ import lombok.NoArgsConstructor;
 import java.sql.Timestamp;
 import java.util.Objects;
 
+/**
+ * The Report class represents a report entity in the database. It stores information about a report,
+ * including its date, diet, health, behavior, validity, associated photo, and the user who created the report.
+ */
 @Entity
 @Data
 @NoArgsConstructor

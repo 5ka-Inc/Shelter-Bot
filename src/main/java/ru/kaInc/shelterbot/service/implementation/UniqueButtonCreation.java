@@ -9,36 +9,35 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * The UniqueButtonCreation class provides a utility for creating unique inline keyboard buttons and sending them in a message to a chat.
+ */
 @Service
 public class UniqueButtonCreation {
-
-
-    /*
-    * Получаем на вход чат id, телеграм бот,
-    *  текст сообщения к которому прикряпляются кнопки,
-    *  лист текстов самих кнопок и callback данные чтобы знать какие кнопки были нажаты
-    * */
+    /**
+     * Creates a message with a set of unique inline keyboard buttons and sends it to a specified chat.
+     *
+     * @param chatId       The ID of the chat to which the message with buttons should be sent.
+     * @param telegramBot  The TelegramBot instance used to send the message.
+     * @param messageText  The text of the message that accompanies the inline keyboard buttons.
+     * @param buttonLabels A list of labels for the inline keyboard buttons, where each label is unique.
+     * @param callbackData A list of callback data associated with each button label, used to identify button actions.
+     */
     public void createButtons(long chatId, TelegramBot telegramBot, String messageText, List<String> buttonLabels, List<String> callbackData) {
-        // Лист где будут храниться сами кнопик
         List<InlineKeyboardButton> buttons = new ArrayList<>();
 
         for (int i = 0; i < buttonLabels.size(); i++) {
-            //создание каждой кнопки
             InlineKeyboardButton button = new InlineKeyboardButton(buttonLabels.get(i));
             button.callbackData(callbackData.get(i));
-            //добавление этих кнопок в лист
             buttons.add(button);
         }
 
-        // Создание разметки для кнопок
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(buttons.toArray(new InlineKeyboardButton[0]));
 
-        // Создание сообщения и прекрепления к нему кнопок
         SendMessage request = new SendMessage(chatId, messageText);
         request.replyMarkup(markup);
 
         telegramBot.execute(request);
     }
-
 
 }

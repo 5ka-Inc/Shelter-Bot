@@ -8,7 +8,10 @@ import ru.kaInc.shelterbot.model.enums.Type;
 
 import java.util.Objects;
 import java.util.Set;
-
+/**
+ * The Shelter class represents a shelter entity in the database. It stores information about a shelter,
+ * including its name, type, and the set of users associated with the shelter.
+ */
 @Entity
 @Data
 @NoArgsConstructor

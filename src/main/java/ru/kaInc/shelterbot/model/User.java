@@ -7,9 +7,11 @@ import lombok.NoArgsConstructor;
 import ru.kaInc.shelterbot.model.enums.Role;
 
 import java.util.Objects;
+import java.util.Set;
 
 /**
- * @author Эпенди
+ * The User class represents a user entity in the database. It stores information about a user,
+ * including their unique identifier (id), chat ID, name, phone number, associated shelter, adopter status, and role.
  */
 @Entity
 @Data
@@ -26,6 +28,9 @@ public class User {
     @Column(name = "name")
     private String name;
 
+    @Column(name = "username")
+    private String username;
+
     @Column(name = "phone")
     private String phone;
 
@@ -40,6 +45,12 @@ public class User {
     @Column(name = "role")
     @Enumerated(EnumType.STRING)
     private Role role;
+
+    @OneToMany(mappedBy = "volunteer")
+    private Set<Ticket> VolTickets;
+
+    @OneToMany(mappedBy = "user")
+    private Set<Ticket> UsrTickets;
 
     @Override
     public boolean equals(Object o) {
