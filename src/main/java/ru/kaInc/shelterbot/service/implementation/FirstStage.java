@@ -4,70 +4,68 @@ import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import lombok.RequiredArgsConstructor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
 import ru.kaInc.shelterbot.utils.CustomKeyboard;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
 @RequiredArgsConstructor
-public class KeyboardBasicShelterOpsImpl implements KeyboardBasic {
-
-    private final FirstStage firstStage;
-    private final Logger logger = LoggerFactory.getLogger(KeyboardBasicShelterOpsImpl.class);
+@Slf4j
+public class FirstStage implements KeyboardBasic {
 
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
         if (updates == null || updates.isEmpty()) {
-            logger.warn("Updates is null or empty");
+            log.warn("Updates is null or empty");
             return;
         }
-
         AtomicLong chatId = new AtomicLong();
-        List<Update> callbackUpdates = new ArrayList<>();
-
         updates.forEach((update -> {
             if (update.callbackQuery() != null && update.callbackQuery().message() != null) {
                 chatId.set(update.callbackQuery().message().chat().id());
                 String callbackData = update.callbackQuery().data();
+
                 switch (callbackData) {
-                    case "Приют для кошек", "Приют для собак":
-                        createButtons(chatId.get(), telegramBot);
+                    case "Информация о приюте":
+                        showShelterInfo(chatId.get(), telegramBot);
+                        break;
+                    case "Как взять животное из приюта":
+                        showAdoptionInfo(chatId.get(), telegramBot);
                         break;
                     case "Позвать волонтера":
                         callVolunteer();
                         break;
                     default:
-                        logger.warn("Unknown callback data: " + callbackData);
+                        log.warn("Unknown callback data: " + callbackData);
                         break;
                 }
             }
         }));
-        if (!callbackUpdates.isEmpty()) {
-            logger.info("readdress to first stage");
-            firstStage.processCommands(callbackUpdates, telegramBot);
-        }
     }
 
-    public void createButtons(Long chatId, TelegramBot telegramBot) {
+    public void showShelterInfo(long chatId, TelegramBot telegramBot) {
         List<List<String>> buttonLabels = new ArrayList<>();
         List<List<String>> callbackData = new ArrayList<>();
 
-        buttonLabels.add(Arrays.asList("Информация о приюте", "Как взять животное из приюта"));
-        buttonLabels.add(Collections.singletonList("Позвать волонтера"));
+        buttonLabels.add(Arrays.asList("Рассказать о приюте", "График работы", "Адрес"));
+        buttonLabels.add(Arrays.asList("Контактные данные охраны", "Техника безопасности"));
 
-        callbackData.add(Arrays.asList("Информация о приюте", "Как взять животное из приюта"));
-        callbackData.add(Collections.singletonList("Позвать волонтера"));
+        callbackData.add(Arrays.asList("GENERAL", "SCHEDULE", "ADDRESS"));
+        callbackData.add(Arrays.asList("SECURITY", "SAFETY_PRECAUTIONS"));
 
-        SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Что бы вы хотели узнать?", buttonLabels, callbackData);
+        SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Информация о приюте", buttonLabels, callbackData);
         telegramBot.execute(message);
+    }
+
+    public void showAdoptionInfo(long chatId, TelegramBot telegramBot) {
+        // Отправить информацию о том, как взять животное из приюта и/или новые кнопки
+        // ...
     }
 
     @Override
