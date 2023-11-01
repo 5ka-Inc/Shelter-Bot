@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
+import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.repo.PhotoRepo;
 import ru.kaInc.shelterbot.service.PhotoService;
@@ -24,7 +25,7 @@ import java.util.Optional;
 public class PhotoServiceImpl implements PhotoService {
     private final Logger logger = LoggerFactory.getLogger(PhotoServiceImpl.class);
 
-
+    private long MAX_SIZE = 1024 * 600;
     private final PhotoRepo photoRepo;
 
     public PhotoServiceImpl(PhotoRepo photoRepo) {
@@ -41,12 +42,12 @@ public class PhotoServiceImpl implements PhotoService {
 
     @Override
     @Transactional
-    public Long upLoadPhoto(Long id, MultipartFile multipartFile) throws IOException {
+    public Long upLoadPhoto(Long id, MultipartFile multipartFile) throws IOException, ImageSizeExceededException {
         if (multipartFile == null) {
             throw new MultipartException("Photo was null");
         }
-        if (multipartFile.getSize() > 1024 * 600) {
-            throw new OutOfMemoryError("Photo size is too big");
+        if (multipartFile.getSize() > MAX_SIZE) {
+            throw new ImageSizeExceededException("Photo size is too big, max size ", MAX_SIZE);
         }
         if (photoRepo.findById(id).isPresent()) {
             throw new EntityExistsException(String.format("Photo with id %s exists", id));

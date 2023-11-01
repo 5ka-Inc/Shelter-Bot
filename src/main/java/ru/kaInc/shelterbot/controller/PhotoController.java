@@ -14,6 +14,7 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.service.PhotoService;
 
@@ -56,7 +57,7 @@ public class PhotoController {
             @ApiResponse(responseCode = "404", description = "Фото не найдено")})
     @PostMapping(value = "refactor-photo/{id}", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Void> uploadPhoto(@Parameter(description = "Идентификатор фото")
-                                            @PathVariable("id") Long id, @RequestParam MultipartFile multipartFile) throws IOException {
+                                            @PathVariable("id") Long id, @RequestParam MultipartFile multipartFile) throws IOException, ImageSizeExceededException {
         if (multipartFile == null) {
             return ResponseEntity.notFound().build();
         }
