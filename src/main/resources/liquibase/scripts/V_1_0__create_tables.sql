@@ -43,3 +43,15 @@ CREATE TABLE reports
     user_id         bigint
 );
 
+-- changeset vasyan:2
+
+CREATE TABLE tickets
+(
+    id             bigint PRIMARY KEY,
+    creation_time timestamp not null,
+    received_time  timestamp,
+    user_id        bigint,
+    username       TEXT not null ,
+    volunteer_id   bigint
+);
+
