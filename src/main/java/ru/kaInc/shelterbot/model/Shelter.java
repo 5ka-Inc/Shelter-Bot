@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -31,6 +32,7 @@ public class Shelter {
     private Type type;
 
     @OneToMany(mappedBy = "shelter")
+    @JsonManagedReference
     private Set<User> users;
 
     @Override

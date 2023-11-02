@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,6 +36,7 @@ public class User {
 
     @ManyToOne()
     @JoinColumn(name = "shelter_id")
+    @JsonBackReference
     private Shelter shelter;
 
     @Column(name = "is_adopter")
