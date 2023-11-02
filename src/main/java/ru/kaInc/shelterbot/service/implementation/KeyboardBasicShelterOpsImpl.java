@@ -45,15 +45,12 @@ public class KeyboardBasicShelterOpsImpl implements KeyboardBasic {
                         callVolunteer();
                         break;
                     default:
-                        logger.warn("Unknown callback data: " + callbackData);
+                        logger.warn("Unknown callback data keybOps: " + callbackData);
                         break;
                 }
             }
         }));
-        if (!callbackUpdates.isEmpty()) {
-            logger.info("readdress to first stage");
-            firstStage.processCommands(callbackUpdates, telegramBot);
-        }
+        firstStage.processCommands(callbackUpdates, telegramBot);
     }
 
     public void createButtons(Long chatId, TelegramBot telegramBot) {

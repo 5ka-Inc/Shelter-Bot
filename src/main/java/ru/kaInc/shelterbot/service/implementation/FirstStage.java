@@ -21,10 +21,6 @@ public class FirstStage implements KeyboardBasic {
 
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
-        if (updates == null || updates.isEmpty()) {
-            log.warn("Updates is null or empty");
-            return;
-        }
         AtomicLong chatId = new AtomicLong();
         updates.forEach((update -> {
             if (update.callbackQuery() != null && update.callbackQuery().message() != null) {
@@ -42,7 +38,7 @@ public class FirstStage implements KeyboardBasic {
                         callVolunteer();
                         break;
                     default:
-                        log.warn("Unknown callback data: " + callbackData);
+                        log.warn("Unknown callback data first stage: " + callbackData);
                         break;
                 }
             }
