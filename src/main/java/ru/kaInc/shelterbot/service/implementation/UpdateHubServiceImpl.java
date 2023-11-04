@@ -54,7 +54,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
                 keyboardBasic.processCommands(updates, telegramBot);
             }
         });
-
     }
 
     /**
@@ -127,7 +126,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             } catch (InterruptedException e) {
                 logger.error(e.getMessage());
             }
-            logger.info("readdress to choose shelter");
             keyboardBasic.processCommands(updates, telegramBot);
 
 //         if (!update.message().text().equals(START_COMMAND)) {

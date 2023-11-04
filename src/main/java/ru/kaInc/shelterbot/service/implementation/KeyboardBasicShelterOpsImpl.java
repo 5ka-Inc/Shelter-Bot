@@ -2,25 +2,20 @@ package ru.kaInc.shelterbot.service.implementation;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
+import com.pengrad.telegrambot.model.request.InlineKeyboardMarkup;
 import com.pengrad.telegrambot.request.SendMessage;
-import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
-import ru.kaInc.shelterbot.utils.CustomKeyboard;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicLong;
 
 @Service
-@RequiredArgsConstructor
 public class KeyboardBasicShelterOpsImpl implements KeyboardBasic {
 
-    private final FirstStage firstStage;
     private final Logger logger = LoggerFactory.getLogger(KeyboardBasicShelterOpsImpl.class);
 
     @Override
@@ -29,46 +24,41 @@ public class KeyboardBasicShelterOpsImpl implements KeyboardBasic {
             logger.warn("Updates is null or empty");
             return;
         }
-
         AtomicLong chatId = new AtomicLong();
-        List<Update> callbackUpdates = new ArrayList<>();
-
         updates.forEach((update -> {
-            if (update.callbackQuery() != null && update.callbackQuery().message() != null) {
-                chatId.set(update.callbackQuery().message().chat().id());
-                String callbackData = update.callbackQuery().data();
-                switch (callbackData) {
-                    case "Приют для кошек", "Приют для собак":
-                        createButtons(chatId.get(), telegramBot);
-                        break;
-                    case "Позвать волонтера":
-                        callVolunteer();
-                        break;
-                    default:
-                        logger.warn("Unknown callback data keybOps: " + callbackData);
-                        break;
-                }
-            }
+            chatId.set(update.callbackQuery().message().chat().id());
+            createButtons(chatId.get(), telegramBot, update.callbackQuery().data());
         }));
-        firstStage.processCommands(callbackUpdates, telegramBot);
+
     }
 
-    public void createButtons(Long chatId, TelegramBot telegramBot) {
-        List<List<String>> buttonLabels = new ArrayList<>();
-        List<List<String>> callbackData = new ArrayList<>();
+    public void createButtons(long chatId, TelegramBot telegramBot, String callbackData) {
 
-        buttonLabels.add(Arrays.asList("Информация о приюте", "Как взять животное из приюта"));
-        buttonLabels.add(Collections.singletonList("Позвать волонтера"));
+        // Создание кнопок
+        InlineKeyboardButton button1 = new InlineKeyboardButton("Информация о приюте");
+        InlineKeyboardButton button2 = new InlineKeyboardButton("Как взять животное из приюта");
+        InlineKeyboardButton button3 = new InlineKeyboardButton("Позвать волонтера");
 
-        callbackData.add(Arrays.asList("Информация о приюте", "Как взять животное из приюта"));
-        callbackData.add(Collections.singletonList("Позвать волонтера"));
+        // Создание разметки для кнопок
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(
+                new InlineKeyboardButton[]{
+                        button1.callbackData("callback_data_1"),
+                        button2.callbackData("callback_data_2")
+                },
+                new InlineKeyboardButton[]{
+                        button3.callbackData("callback_data_3")
+                }
+        );
+        // Создание сообщения с кнопками
+        SendMessage request = new SendMessage(chatId, callbackData + ":");
 
-        SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Что бы вы хотели узнать?", buttonLabels, callbackData);
-        telegramBot.execute(message);
+        request.replyMarkup(markup);
+        telegramBot.execute(request);
     }
 
     @Override
     public void callVolunteer() {
 
     }
+
 }
