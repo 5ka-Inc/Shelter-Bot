@@ -32,7 +32,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     public Report createReport(Report report) {
         logger.debug("Creating {} {}", report);
-        if(report == null) {
+        if (report == null) {
             throw new IllegalArgumentException("Report was null");
         }
 
@@ -69,7 +69,7 @@ public class ReportServiceImpl implements ReportService {
     public Optional<Report> updatedReport(Report report) {
         Optional<Report> newReport = reportRepo.findById(report.getId());
 
-        if(newReport.isEmpty()){
+        if (newReport.isEmpty()) {
             throw new EntityNotFoundException(String.format("Report with id %s not found", report.getId()));
         }
         if (userRepo.findById(report.getUser().getId()).isEmpty()) {
@@ -107,7 +107,7 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public void deleteReportById(Long id) {
-        if(reportRepo.findById(id).isEmpty()) {
+        if (reportRepo.findById(id).isEmpty()) {
             throw new EntityNotFoundException(String.format("Report with id %s not found", id));
         }
         reportRepo.deleteById(id);
