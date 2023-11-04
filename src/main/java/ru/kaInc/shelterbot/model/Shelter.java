@@ -4,8 +4,11 @@ import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import ru.kaInc.shelterbot.model.enums.ShelterInfo;
 import ru.kaInc.shelterbot.model.enums.Type;
 
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 /**
@@ -14,7 +17,6 @@ import java.util.Set;
  */
 @Entity
 @Data
-@NoArgsConstructor
 @Table(name = "shelters")
 public class Shelter {
 
@@ -34,6 +36,21 @@ public class Shelter {
     @OneToMany(mappedBy = "shelter")
     @JsonManagedReference
     private Set<User> users;
+
+    @ElementCollection
+    @CollectionTable(name = "shelter_info", joinColumns = @JoinColumn(name = "shelter_id"))
+    @MapKeyColumn(name = "property")
+    @MapKeyEnumerated(EnumType.STRING)
+    @Column(name = "info")
+    private Map<ShelterInfo, String> properties;
+
+    public Shelter() {
+        properties = new EnumMap<>(ShelterInfo.class);
+    }
+
+    public String getShelterInfo(ShelterInfo info) {
+        return properties.get(info);
+    }
 
     @Override
     public boolean equals(Object o) {
