@@ -18,7 +18,6 @@ import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Optional;
 
 @Service
 @Transactional
@@ -33,11 +32,10 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
     @Override
-    public Optional<Photo> findPhotoById(Long id) {
-        if (photoRepo.findById(id) == null) {
-            throw new EntityNotFoundException(String.format("Photo with id %s not found", id));
-        }
-        return photoRepo.findById(id);
+    public Photo findPhotoById(Long id) {
+        Photo foundPhoto = photoRepo.findById(id).orElseThrow(() ->
+                new EntityNotFoundException(String.format("Photo with id %s not found", id)));
+        return foundPhoto;
     }
 
     @Override

@@ -6,15 +6,13 @@ import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @Service
 public interface PhotoService {
-    Optional<Photo> findPhotoById(Long id);
+    Photo findPhotoById(Long id);
 
     Long upLoadPhoto(Long id, MultipartFile photo) throws IOException, ImageSizeExceededException;
 
-//    Photo savePhoto(Photo photo);
 
     void deletePhoto(Long photoId);
 

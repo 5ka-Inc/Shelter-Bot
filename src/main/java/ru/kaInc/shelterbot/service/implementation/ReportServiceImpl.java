@@ -15,14 +15,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
-@Transactional
 public class ReportServiceImpl implements ReportService {
     private final Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
 
     private final ReportRepo reportRepo;
     private final UserRepo userRepo;
-
-    private Timestamp timestamp = new Timestamp(System.currentTimeMillis());
 
     public ReportServiceImpl(ReportRepo reportRepo, UserRepo userRepo) {
         this.reportRepo = reportRepo;
@@ -30,33 +27,21 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public Report createReport(Report report) {
-        logger.debug("Creating {} {}", report);
-        if(report == null) {
-            throw new IllegalArgumentException("Report was null");
-        }
-
-        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
-            throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
-        }
-
-        if (report.getPhoto() == null) {
-            throw new EntityNotFoundException("Photo not found");
-        }
-
-        if (timestamp.compareTo(report.getDate()) > 0) {
-            throw new IllegalArgumentException("Еhe specified time has not arrived");
-        }
+        logger.debug("Creating report: {}", report);
+        validateReport(report);
 
         return reportRepo.save(report);
     }
 
     @Override
     public List<Report> getAll() {
-        if (reportRepo.findAll().isEmpty()) {
-            throw new EntityNotFoundException("Report not found");
+        List<Report> reports = reportRepo.findAll();
+        if (reports.isEmpty()) {
+            throw new EntityNotFoundException("No reports found");
         }
-        return reportRepo.findAll();
+        return reports;
     }
 
     @Override
@@ -66,50 +51,59 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    @Transactional
     public Optional<Report> updatedReport(Report report) {
-        Optional<Report> newReport = reportRepo.findById(report.getId());
+        validateReport(report);
 
-        if(newReport.isEmpty()){
-            throw new EntityNotFoundException(String.format("Report with id %s not found", report.getId()));
-        }
-        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
-            throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
-        }
+        Report existingReport = reportRepo.findById(report.getId())
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Report with id %s not found", report.getId())));
 
-        if (report.getPhoto() == null) {
-            throw new EntityNotFoundException("Photo not found");
-        }
-
-        if (timestamp.compareTo(report.getDate()) > 0) {
-            throw new IllegalArgumentException("Еhe specified time has not arrived");
-        }
+        existingReport.setId(report.getId());
+        existingReport.setDate(report.getDate());
+        existingReport.setDiet(report.getDiet());
+        existingReport.setHealth(report.getHealth());
+        existingReport.setPhoto(report.getPhoto());
+        existingReport.setBehavior(report.getBehavior());
+        existingReport.setUser(report.getUser());
 
 
-        newReport.get().setId(report.getId());
-        newReport.get().setDate(report.getDate());
-        newReport.get().setDiet(report.getDiet());
-        newReport.get().setHealth(report.getHealth());
-        newReport.get().setPhoto(report.getPhoto());
-        newReport.get().setBehavior(report.getBehavior());
-        newReport.get().setUser(report.getUser());
-
-        return newReport;
+        return Optional.of(reportRepo.save(existingReport));
     }
 
     @Override
     public List<Report> getReportsByUserId(Long userId) {
         List<Report> foundReports = reportRepo.getReportsByUserId(userId);
         if (foundReports.isEmpty()) {
-            throw new EntityNotFoundException(String.format("Not found Reports by %s user id", userId));
+            throw new EntityNotFoundException(String.format("No reports found by user id %s", userId));
         }
-        return reportRepo.getReportsByUserId(userId);
+        return foundReports;
     }
 
     @Override
+    @Transactional
     public void deleteReportById(Long id) {
-        if(reportRepo.findById(id).isEmpty()) {
+        if (reportRepo.findById(id).isEmpty()) {
             throw new EntityNotFoundException(String.format("Report with id %s not found", id));
         }
         reportRepo.deleteById(id);
+    }
+
+    private void validateReport(Report report) {
+        if (report == null) {
+            throw new IllegalArgumentException("Report was null");
+        }
+
+        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
+            throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
+        }
+
+        if (report.getPhoto() == null) {
+            throw new IllegalArgumentException("Photo not found");
+        }
+
+        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
+        if (currentTimestamp.compareTo(report.getDate()) > 0) {
+            throw new IllegalArgumentException("The specified time has not arrived");
+        }
     }
 }
