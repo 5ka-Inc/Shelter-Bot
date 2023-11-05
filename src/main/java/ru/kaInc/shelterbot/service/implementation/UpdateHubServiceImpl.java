@@ -121,11 +121,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         } else {
             SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай");
             telegramBot.execute(message);
-            try {
-                Thread.sleep(1000L);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage());
-            }
             keyboardBasic.processCommands(updates, telegramBot);
 
 //         if (!update.message().text().equals(START_COMMAND)) {
