@@ -1,10 +1,10 @@
 package ru.kaInc.shelterbot.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
 
 import java.util.Objects;
-import java.util.UUID;
 
 /**
  * The Photo class represents a photo entity in the database. It is used to store binary image data associated with a report.
@@ -14,14 +14,20 @@ import java.util.UUID;
 @Table(name = "photo")
 public class Photo {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
+    @Column(name = "file_size")
+    private Long fileSize;
+
+    @Column(name = "media_type")
+    private String mediaType;
+
+    @Lob
     @Column(name = "data")
     private byte[] data;
-
     @OneToOne
+    @JsonBackReference
     @JoinColumn(name = "report_id")
     private Report report;
 

@@ -33,10 +33,6 @@ public class KeyboardBasicIml implements KeyboardBasic {
      */
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
-        if (updates == null || updates.isEmpty()) {
-            logger.warn("Updates is null or empty");
-            return;
-        }
 
 //         AtomicLong chatId = new AtomicLong();
 //         updates.forEach(update -> {

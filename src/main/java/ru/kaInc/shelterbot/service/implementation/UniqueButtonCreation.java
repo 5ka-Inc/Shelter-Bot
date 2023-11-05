@@ -24,6 +24,11 @@ public class UniqueButtonCreation {
      * @param callbackData A list of callback data associated with each button label, used to identify button actions.
      */
     public void createButtons(long chatId, TelegramBot telegramBot, String messageText, List<String> buttonLabels, List<String> callbackData) {
+
+        if (buttonLabels.size() != callbackData.size()) {
+            throw new IllegalArgumentException("Number of button labels must be equal to number of callbacks");
+        }
+
         List<InlineKeyboardButton> buttons = new ArrayList<>();
 
         for (int i = 0; i < buttonLabels.size(); i++) {
@@ -31,8 +36,13 @@ public class UniqueButtonCreation {
             button.callbackData(callbackData.get(i));
             buttons.add(button);
         }
+        InlineKeyboardButton volunteerCall = new InlineKeyboardButton("Позвать волонтера");
 
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(buttons.toArray(new InlineKeyboardButton[0]));
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(buttons.toArray(new InlineKeyboardButton[0]),
+                new InlineKeyboardButton[]{
+                        volunteerCall.callbackData("call_volunteer")}
+        );
+
 
         SendMessage request = new SendMessage(chatId, messageText);
         request.replyMarkup(markup);
