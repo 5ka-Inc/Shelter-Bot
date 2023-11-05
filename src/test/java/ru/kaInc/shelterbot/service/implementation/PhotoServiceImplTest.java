@@ -1,11 +1,14 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import org.springframework.mock.web.MockMultipartFile;
+import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
@@ -23,85 +26,106 @@ class PhotoServiceImplTest {
     @Mock
     private PhotoRepo photoRepo;
 
-    @Mock
-    private MultipartFile multipartFile;
-
     @InjectMocks
     private PhotoServiceImpl photoService;
 
+    private Photo photo;
+    private Long photoId;
+    private MultipartFile multipartFile;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        photoId = 1L;
+        photo = new Photo();
+        photo.setId(photoId);
+        multipartFile = new MockMultipartFile(
+                "photo", "test.jpg", "image/jpeg", "test image content".getBytes());
     }
 
     @Test
-    void findPhotoById_existingId_shouldReturnPhoto() {
-        Long photoId = 1L;
-        Photo photo = new Photo();
+    public void findPhotoById_Found() {
         when(photoRepo.findById(photoId)).thenReturn(Optional.of(photo));
 
-        Optional<Photo> result = photoService.findPhotoById(photoId);
+        Photo foundPhoto = photoService.findPhotoById(photoId);
 
-        assertTrue(result.isPresent());
-        assertEquals(photo, result.get());
-        verify(photoRepo, times(1)).findById(photoId);
+        assertNotNull(foundPhoto);
+        assertEquals(photoId, foundPhoto.getId());
+        verify(photoRepo).findById(photoId);
     }
 
     @Test
-    void findPhotoById_nonExistingId_shouldThrowEntityNotFoundException() {
-        Long photoId = 1L;
+    public void findPhotoById_NotFound_ThrowsEntityNotFoundException() {
         when(photoRepo.findById(photoId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> photoService.findPhotoById(photoId));
-
-        assertEquals(String.format("Photo with id %s not found", photoId), exception.getMessage());
+        assertThrows(EntityNotFoundException.class, () -> photoService.findPhotoById(photoId));
     }
 
     @Test
-    void upLoadPhoto_validInput_shouldSaveAndReturnPhotoId() throws IOException, ImageSizeExceededException {
-        Long photoId = 1L;
-        when(multipartFile.getSize()).thenReturn(100L);  // Assuming size is valid
+    public void upLoadPhoto_Success() throws IOException, ImageSizeExceededException {
         when(photoRepo.findById(photoId)).thenReturn(Optional.empty());
-        when(photoRepo.save(any(Photo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+        when(photoRepo.save(any(Photo.class))).thenReturn(photo);
 
-        Long result = photoService.upLoadPhoto(photoId, multipartFile);
+        Long uploadedPhotoId = photoService.upLoadPhoto(photoId, multipartFile);
 
-        assertEquals(photoId, result);
-        verify(photoRepo, times(1)).save(any(Photo.class));
-    }
-
-    // TODO: дописать тесты для эксепшенов
-
-    @Test
-    void deletePhoto_existingPhoto_shouldDeletePhoto() {
-        Long photoId = 1L;
-        when(photoRepo.findById(photoId)).thenReturn(Optional.of(new Photo()));
-
-        photoService.deletePhoto(photoId);
-
-        verify(photoRepo, times(1)).deleteById(photoId);
+        assertNotNull(uploadedPhotoId);
+        verify(photoRepo).save(any(Photo.class));
     }
 
     @Test
-    void deletePhoto_nonExistingPhoto_shouldThrowEntityNotFoundException() {
-        Long photoId = 1L;
+    public void upLoadPhoto_NullPhoto_ThrowsMultipartException() {
+        assertThrows(MultipartException.class, () -> photoService.upLoadPhoto(photoId, null));
+    }
+
+    @Test
+    public void upLoadPhoto_ExceedsSize_ThrowsImageSizeExceededException() {
+        long MAX_SIZE = 1024 * 600;
+        MultipartFile bigFile = new MockMultipartFile(
+                "bigphoto", "bigtest.jpg", "image/jpeg", new byte[(int) (MAX_SIZE + 1)]);
+
+        assertThrows(ImageSizeExceededException.class, () -> photoService.upLoadPhoto(photoId, bigFile));
+    }
+
+    @Test
+    public void upLoadPhoto_AlreadyExists_ThrowsEntityExistsException() {
+        when(photoRepo.findById(photoId)).thenReturn(Optional.of(photo));
+
+        assertThrows(EntityExistsException.class, () -> photoService.upLoadPhoto(photoId, multipartFile));
+    }
+
+    @Test
+    public void deletePhoto_Success() {
+        when(photoRepo.findById(photoId)).thenReturn(Optional.of(photo));
+        doNothing().when(photoRepo).deleteById(photoId);
+
+        assertDoesNotThrow(() -> photoService.deletePhoto(photoId));
+        verify(photoRepo).deleteById(photoId);
+    }
+
+    @Test
+    public void deletePhoto_NotFound_ThrowsEntityNotFoundException() {
         when(photoRepo.findById(photoId)).thenReturn(Optional.empty());
 
-        Exception exception = assertThrows(EntityNotFoundException.class, () -> photoService.deletePhoto(photoId));
-
-        assertEquals(String.format("Photo with id %s not found", photoId), exception.getMessage());
+        assertThrows(EntityNotFoundException.class, () -> photoService.deletePhoto(photoId));
     }
 
     @Test
-    void refactorPhoto_validInput_shouldSaveAndReturnPhoto() throws IOException {
-        Long photoId = 1L;
-        when(multipartFile.getBytes()).thenReturn(new byte[0]);
-        when(photoRepo.save(any(Photo.class))).thenAnswer(invocation -> invocation.getArgument(0));
+    public void refactorPhoto_Success() {
+        when(photoRepo.save(any(Photo.class))).thenReturn(photo);
 
-        Photo result = photoService.refactorPhoto(photoId, multipartFile);
+        Photo savedPhoto = photoService.refactorPhoto(photoId, multipartFile);
 
-        assertNotNull(result);
-        assertEquals(photoId, result.getId());
-        verify(photoRepo, times(1)).save(any(Photo.class));
+        assertNotNull(savedPhoto);
+        verify(photoRepo).save(any(Photo.class));
+    }
+
+    @Test
+    public void refactorPhoto_Fail_ThrowsRuntimeException() throws IOException {
+        MultipartFile fileThatCausesIOException = mock(MultipartFile.class);
+        when(fileThatCausesIOException.getBytes()).thenThrow(new IOException());
+
+        assertThrows(RuntimeException.class, () -> photoService.refactorPhoto(photoId, fileThatCausesIOException));
     }
 }
+

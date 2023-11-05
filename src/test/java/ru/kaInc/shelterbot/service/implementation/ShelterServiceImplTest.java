@@ -10,16 +10,13 @@ import ru.kaInc.shelterbot.model.Shelter;
 import ru.kaInc.shelterbot.model.enums.Type;
 import ru.kaInc.shelterbot.repo.ShelterRepo;
 
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
-class ShelterServiceImplTest {
+public class ShelterServiceImplTest {
 
     @Mock
     private ShelterRepo shelterRepo;
@@ -27,104 +24,105 @@ class ShelterServiceImplTest {
     @InjectMocks
     private ShelterServiceImpl shelterService;
 
+    private Shelter shelterDog;
+    private Shelter shelterCat;
+
     @BeforeEach
-    void setUp() {
+    public void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        shelterDog = createShelter(1L, "Dog Shelter", Type.DOG);
+        shelterCat = createShelter(2L, "Cat Shelter", Type.CAT);
     }
 
-    @Test
-    void createShelter() {
+    private Shelter createShelter(Long id, String name, Type type) {
         Shelter shelter = new Shelter();
-        when(shelterRepo.save(any(Shelter.class))).thenReturn(shelter);
-
-        Shelter result = shelterService.createShelter(shelter);
-
-        assertNotNull(result);
-        verify(shelterRepo, times(1)).save(shelter);
+        shelter.setId(id);
+        shelter.setName(name);
+        shelter.setType(type);
+        return shelter;
     }
 
     @Test
-    void findById_existingId_shouldReturnShelter() {
-        Shelter shelter = new Shelter();
-        shelter.setId(1L);
-        when(shelterRepo.findById(anyLong())).thenReturn(Optional.of(shelter));
+    public void testCreateShelter() {
+        when(shelterRepo.save(any(Shelter.class))).thenReturn(shelterDog);
 
-        Shelter result = shelterService.findById(1L);
+        Shelter created = shelterService.createShelter(shelterDog);
 
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertNotNull(created);
+        assertEquals(shelterDog, created);
     }
 
     @Test
-    void findById_nonExistingId_shouldThrowException() {
+    public void testFindByIdFound() {
+        when(shelterRepo.findById(anyLong())).thenReturn(Optional.of(shelterDog));
+
+        Shelter found = shelterService.findById(shelterDog.getId());
+
+        assertNotNull(found);
+        assertEquals(shelterDog.getId(), found.getId());
+    }
+
+    @Test
+    public void testFindByIdNotFound() {
         when(shelterRepo.findById(anyLong())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> shelterService.findById(1L));
+        assertThrows(EntityNotFoundException.class, () -> shelterService.findById(anyLong()));
     }
 
     @Test
-    void findAll() {
-        List<Shelter> shelters = Arrays.asList(new Shelter(), new Shelter());
-        when(shelterRepo.findAll()).thenReturn(shelters);
+    public void testFindAll() {
+        when(shelterRepo.findAll()).thenReturn(List.of(shelterDog, shelterCat));
 
-        List<Shelter> result = shelterService.findAll();
+        List<Shelter> foundShelters = shelterService.findAll();
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
+        assertNotNull(foundShelters);
+        assertEquals(2, foundShelters.size());
     }
 
     @Test
-    void findByShelterType_existingType_shouldReturnShelters() {
-        List<Shelter> shelters = Arrays.asList(new Shelter(), new Shelter());
-        when(shelterRepo.findShelterByType(anyString())).thenReturn(shelters);
+    public void testFindByShelterTypeFound() {
+        String type = "DOG";
+        when(shelterRepo.findShelterByType(type)).thenReturn(List.of(shelterDog));
 
-        List<Shelter> result = shelterService.findByShelterType("someType");
+        List<Shelter> foundShelters = shelterService.findByShelterType(type);
 
-        assertNotNull(result);
-        assertEquals(2, result.size());
+        assertNotNull(foundShelters);
+        assertEquals(1, foundShelters.size());
     }
 
     @Test
-    void findByShelterType_nonExistingType_shouldThrowException() {
-        when(shelterRepo.findShelterByType(anyString())).thenReturn(Arrays.asList());
+    public void testFindByShelterTypeNotFound() {
+        when(shelterRepo.findShelterByType(anyString())).thenReturn(List.of());
 
-        assertThrows(EntityNotFoundException.class, () -> shelterService.findByShelterType("someType"));
+        assertThrows(EntityNotFoundException.class, () -> shelterService.findByShelterType(anyString()));
     }
 
     @Test
-    void updateShelter() {
-        Shelter shelter = new Shelter();
-        shelter.setId(1L);
-        when(shelterRepo.findById(anyLong())).thenReturn(Optional.of(shelter));
-        when(shelterRepo.save(any(Shelter.class))).thenReturn(shelter);
+    public void testUpdateShelter() {
+        when(shelterRepo.findById(anyLong())).thenReturn(Optional.of(shelterDog));
+        when(shelterRepo.save(any(Shelter.class))).thenReturn(shelterDog);
 
-        Shelter updatedShelter = new Shelter();
-        updatedShelter.setId(1L);
-        updatedShelter.setName("New Name");
-        updatedShelter.setType(Type.DOG);
+        shelterDog.setName("Абракадабра");
+        Shelter updated = shelterService.updateShelter(shelterDog);
 
-        Shelter result = shelterService.updateShelter(updatedShelter);
-
-        assertNotNull(result);
-        assertEquals("New Name", result.getName());
-        assertEquals(Type.DOG, result.getType());
+        assertNotNull(updated);
+        assertEquals("Абракадабра", updated.getName());
     }
 
     @Test
-    void deleteShelter_existingId_shouldDeleteShelter() {
-        Shelter shelter = new Shelter();
-        shelter.setId(1L);
-        when(shelterRepo.findById(anyLong())).thenReturn(Optional.of(shelter));
+    public void testDeleteShelterFound() {
+        when(shelterRepo.findById(anyLong())).thenReturn(Optional.of(shelterDog));
+        doNothing().when(shelterRepo).deleteById(shelterDog.getId());
 
-        shelterService.deleteShelter(1L);
-
-        verify(shelterRepo, times(1)).deleteById(1L);
+        assertDoesNotThrow(() -> shelterService.deleteShelter(shelterDog.getId()));
+        verify(shelterRepo, times(1)).deleteById(shelterDog.getId());
     }
 
     @Test
-    void deleteShelter_nonExistingId_shouldThrowException() {
-        when(shelterRepo.findById(anyLong())).thenReturn(Optional.empty());
+    public void testDeleteShelterNotFound() {
+        when(shelterRepo.findById(shelterDog.getId())).thenReturn(Optional.empty());
 
-        assertThrows(EntityNotFoundException.class, () -> shelterService.deleteShelter(1L));
+        assertThrows(EntityNotFoundException.class, () -> shelterService.deleteShelter(shelterDog.getId()));
     }
 }

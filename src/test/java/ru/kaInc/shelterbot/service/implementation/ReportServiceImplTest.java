@@ -1,22 +1,23 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import jakarta.persistence.EntityNotFoundException;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
+import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.repo.ReportRepo;
 import ru.kaInc.shelterbot.repo.UserRepo;
 
-import java.util.Arrays;
+import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 class ReportServiceImplTest {
@@ -30,80 +31,129 @@ class ReportServiceImplTest {
     @InjectMocks
     private ReportServiceImpl reportService;
 
+    private Report report;
+    private User user;
+    private Long reportId;
+    private Long userId;
+
+
     @BeforeEach
     void setUp() {
         MockitoAnnotations.openMocks(this);
+
+        userId = 1L;
+        user = new User();
+        user.setId(userId);
+
+        reportId = 1L;
+        report = new Report();
+        report.setId(reportId);
+        report.setUser(user);
+        report.setPhoto(new Photo());
+        report.setDate(new Timestamp(System.currentTimeMillis() + 100000)); // Future timestamp for testing
+
+        when(userRepo.findById(userId)).thenReturn(Optional.of(user));
     }
 
     @Test
-    void createReport_validInput_shouldSaveAndReturnReport() {
-        Report report = new Report();
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(mock(User.class)));
+    public void createReport_Success() {
         when(reportRepo.save(any(Report.class))).thenReturn(report);
 
-        Report result = reportService.createReport(report);
+        Report createdReport = reportService.createReport(report);
 
-        assertNotNull(result);
-        verify(reportRepo, times(1)).save(report);
+        assertNotNull(createdReport);
+        verify(reportRepo).save(report);
     }
 
     @Test
-    void getAll_reportsExist_shouldReturnAllReports() {
-        List<Report> reports = Arrays.asList(new Report(), new Report());
-        when(reportRepo.findAll()).thenReturn(reports);
-
-        List<Report> result = reportService.getAll();
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
+    public void createReport_ReportNull_ThrowsIllegalArgumentException() {
+        Exception exception = assertThrows(IllegalArgumentException.class, () -> reportService.createReport(null));
+        assertEquals("Report was null", exception.getMessage());
     }
 
     @Test
-    void getReportById_existingId_shouldReturnReport() {
-        Report report = new Report();
-        report.setId(1L);
-        when(reportRepo.findById(anyLong())).thenReturn(Optional.of(report));
+    public void getAll_ReportsFound() {
+        when(reportRepo.findAll()).thenReturn(List.of(report));
 
-        Report result = reportService.getReportById(1L);
+        List<Report> reports = reportService.getAll();
 
-        assertNotNull(result);
-        assertEquals(1L, result.getId());
+        assertFalse(reports.isEmpty());
+        assertEquals(1, reports.size());
+        verify(reportRepo).findAll();
     }
 
     @Test
-    void updatedReport_validInput_shouldUpdateAndReturnReport() {
-        Report report = new Report();
-        report.setId(1L);
-        when(reportRepo.findById(anyLong())).thenReturn(Optional.of(new Report()));
-        when(userRepo.findById(anyLong())).thenReturn(Optional.of(mock(User.class)));
+    public void getAll_NoReportsFound_ThrowsEntityNotFoundException() {
+        when(reportRepo.findAll()).thenReturn(List.of());
+
+        assertThrows(EntityNotFoundException.class, () -> reportService.getAll());
+    }
+
+    @Test
+    public void getReportById_ReportFound() {
+        when(reportRepo.findById(reportId)).thenReturn(Optional.of(report));
+
+        Report foundReport = reportService.getReportById(reportId);
+
+        assertNotNull(foundReport);
+        assertEquals(reportId, foundReport.getId());
+    }
+
+    @Test
+    public void getReportById_ReportNotFound_ThrowsEntityNotFoundException() {
+        when(reportRepo.findById(reportId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> reportService.getReportById(reportId));
+    }
+
+    @Test
+    public void updatedReport_Success() {
+        when(reportRepo.findById(reportId)).thenReturn(Optional.of(report));
         when(reportRepo.save(any(Report.class))).thenReturn(report);
 
-        Optional<Report> result = reportService.updatedReport(report);
+        Optional<Report> updatedReport = reportService.updatedReport(report);
 
-        assertTrue(result.isPresent());
-        assertEquals(1L, result.get().getId());
+        assertTrue(updatedReport.isPresent());
+        verify(reportRepo).save(report);
     }
 
     @Test
-    void getReportsByUserId_existingUserId_shouldReturnReports() {
-        List<Report> reports = Arrays.asList(new Report(), new Report());
-        when(reportRepo.getReportsByUserId(anyLong())).thenReturn(reports);
+    public void updatedReport_ReportNotFound_ThrowsEntityNotFoundException() {
+        when(reportRepo.findById(reportId)).thenReturn(Optional.empty());
 
-        List<Report> result = reportService.getReportsByUserId(1L);
-
-        assertNotNull(result);
-        assertEquals(2, result.size());
+        assertThrows(EntityNotFoundException.class, () -> reportService.updatedReport(report));
     }
 
     @Test
-    void deleteReportById_existingId_shouldDeleteReport() {
-        Report report = new Report();
-        report.setId(1L);
-        when(reportRepo.findById(anyLong())).thenReturn(Optional.of(report));
+    public void getReportsByUserId_ReportsFound() {
+        when(reportRepo.getReportsByUserId(userId)).thenReturn(List.of(report));
 
-        reportService.deleteReportById(1L);
+        List<Report> reports = reportService.getReportsByUserId(userId);
 
-        verify(reportRepo, times(1)).deleteById(1L);
+        assertFalse(reports.isEmpty());
+        assertEquals(1, reports.size());
     }
-    // TODO: дописать тесты для эксепшенов
+
+    @Test
+    public void getReportsByUserId_NoReportsFound_ThrowsEntityNotFoundException() {
+        when(reportRepo.getReportsByUserId(userId)).thenReturn(List.of());
+
+        assertThrows(EntityNotFoundException.class, () -> reportService.getReportsByUserId(userId));
+    }
+
+    @Test
+    public void deleteReportById_ReportExists() {
+        when(reportRepo.findById(reportId)).thenReturn(Optional.of(report));
+        doNothing().when(reportRepo).deleteById(reportId);
+
+        assertDoesNotThrow(() -> reportService.deleteReportById(reportId));
+        verify(reportRepo).deleteById(reportId);
+    }
+
+    @Test
+    public void deleteReportById_ReportNotFound_ThrowsEntityNotFoundException() {
+        when(reportRepo.findById(reportId)).thenReturn(Optional.empty());
+
+        assertThrows(EntityNotFoundException.class, () -> reportService.deleteReportById(reportId));
+    }
 }

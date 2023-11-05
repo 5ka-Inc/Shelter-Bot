@@ -1,12 +1,13 @@
 package ru.kaInc.shelterbot.controller;
 
-import io.swagger.v3.oas.annotations.*;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.*;
+import io.swagger.v3.oas.annotations.media.ArraySchema;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -19,7 +20,6 @@ import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.service.PhotoService;
 
 import java.io.IOException;
-import java.util.Optional;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,20 +35,19 @@ public class PhotoController {
     @GetMapping("id/{id}")
     public ResponseEntity<byte[]> findPhotoById(@Parameter(description = "Идентификатор фото")
                                                 @PathVariable("id") Long id) {
-        Optional<Photo> foundPhoto = photoService.findPhotoById(id);
+        Photo foundPhoto = photoService.findPhotoById(id);
 
-        if (foundPhoto.isEmpty()) {
+        if (foundPhoto == null) {
             return ResponseEntity.notFound().build();
         }
 
-        Photo photo = foundPhoto.get();
         HttpHeaders headers = new HttpHeaders();
 
         // Устанавливаем заголовок Content-Type для изображения
         headers.setContentType(MediaType.IMAGE_JPEG); // Предполагая, что формат изображения JPEG
 
         // Возвращаем изображение в байтах и устанавливаем заголовки
-        return new ResponseEntity<>(photo.getData(), headers, HttpStatus.OK);
+        return new ResponseEntity<>(foundPhoto.getData(), headers, HttpStatus.OK);
     }
 
     @Operation(summary = "Сохранить фото")
@@ -66,7 +65,6 @@ public class PhotoController {
     }
 
 
-
     @Operation(summary = "Удалить фото")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Фото удалено",
@@ -76,12 +74,11 @@ public class PhotoController {
     @DeleteMapping("delete/{id}")
     public ResponseEntity<Void> deletePhotoById(@Parameter(description = "Идентификатор фото")
                                                 @PathVariable("id") Long id) {
-        Optional<Photo> foundPhoto = photoService.findPhotoById(id);
-        if (foundPhoto.isEmpty()) {
+        Photo foundPhoto = photoService.findPhotoById(id);
+        if (foundPhoto == null) {
             return ResponseEntity.notFound().build();
         }
         photoService.deletePhoto(id);
         return ResponseEntity.ok().build();
     }
-
 }
