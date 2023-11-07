@@ -5,6 +5,7 @@ public enum ShelterInfo {
     SCHEDULE,
     ADDRESS,
     SECURITY,
-    SAFETY_PRECAUTIONS
+    SAFETY_PRECAUTIONS;
+
 
 }

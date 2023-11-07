@@ -10,6 +10,7 @@ import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
 import ru.kaInc.shelterbot.service.UpdateHubService;
 import ru.kaInc.shelterbot.service.UserService;
+import ru.kaInc.shelterbot.service.implementation.keyboards.KeyboardBasicIml;
 
 import java.util.List;
 
@@ -119,7 +120,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         if (update.message().text().equals("/start")) {
             keyboardBasic.processCommands(updates, telegramBot);
         } else {
-            SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай");
+            SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай"); // ВЕРНУТЬ В СТАТИЧЕСКУЮ ПЕРЕМЕННУЮ
             telegramBot.execute(message);
             keyboardBasic.processCommands(updates, telegramBot);
 

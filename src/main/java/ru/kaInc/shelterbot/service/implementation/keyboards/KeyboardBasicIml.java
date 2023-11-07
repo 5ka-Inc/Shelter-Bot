@@ -1,4 +1,4 @@
-package ru.kaInc.shelterbot.service.implementation;
+package ru.kaInc.shelterbot.service.implementation.keyboards;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;

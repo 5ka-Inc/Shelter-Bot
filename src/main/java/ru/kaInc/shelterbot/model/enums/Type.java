@@ -1,5 +1,9 @@
 package ru.kaInc.shelterbot.model.enums;
 
+import java.util.List;
+
+
+
 /**
  * The Type enum represents different types of entities in the system. It defines two types: "CAT" and "DOG".
  */
@@ -13,5 +17,5 @@ public enum Type {
     /**
      * The "DOG" type represents an entity related to dogs.
      */
-    DOG
+    DOG,
 }

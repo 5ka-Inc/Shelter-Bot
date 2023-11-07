@@ -1,4 +1,4 @@
-package ru.kaInc.shelterbot.service.implementation;
+package ru.kaInc.shelterbot.service.implementation.keyboards;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
@@ -14,7 +14,7 @@ import java.util.concurrent.atomic.AtomicLong;
 @Service
 public class KeyboardBasicShelterOpsImpl implements KeyboardBasic {
     @Autowired
-    private UniqueButtonCreation buttonsCreator;
+    private UniqueButtonCreator buttonsCreator;
     //Предлагаю вынести функционал создания кнопки с вызвом волонтера в класс UniqueButtonCreation, что бы он всегда создавался даже без передачи в него этих данных.
     //UPD Это сделал. Теперь обработку колбека на вызов волонтера имеет смысл вынести в хаб, поскольку он может прилететь откуда угодно и всегда будет одинаковым. Нет смысла плодить лишнюю логику, которая может быть обработана сразу
 
