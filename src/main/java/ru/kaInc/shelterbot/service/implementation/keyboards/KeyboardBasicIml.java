@@ -91,7 +91,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
         buttonLabels.add(Collections.singletonList("Позвать волонтера"));
 
         callbackData.add(Arrays.asList("Кошачий приют", "Собачий приют"));
-        callbackData.add(Collections.singletonList("Вызов волонтера"));
+        callbackData.add(Collections.singletonList("CALL_VOLUNTEER"));
 
         // Создание клавиатуры с помощью CustomKeyboard.createKeyboard
         SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Выберите приют:", buttonLabels, callbackData);

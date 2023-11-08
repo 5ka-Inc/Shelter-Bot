@@ -27,8 +27,12 @@ public class Ticket {
 
     @Column(name = "received_time")
     private LocalDateTime receivedByVolunteerTime;
+
     @Column(name = "username")
     private String creatorsUsername;
+
+    @Column(name = "error_description")
+    private String errorDescription;
 
 
     /**
