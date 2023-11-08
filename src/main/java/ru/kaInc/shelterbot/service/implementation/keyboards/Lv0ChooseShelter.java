@@ -15,15 +15,24 @@ import java.util.*;
 /**
  * The KeyboardBasicIml class is an implementation of the KeyboardBasic interface and is responsible for handling keyboard interactions and creating unique inline keyboard buttons.
  */
+
 @Service
-public class KeyboardBasicIml implements KeyboardBasic {
+public class Lv0ChooseShelter implements KeyboardBasic {
 
-    private final Logger logger = LoggerFactory.getLogger(KeyboardBasicIml.class);
-    private final KeyboardBasicShelterOpsImpl keyboardBasicShelterOps;
+    private final Logger logger = LoggerFactory.getLogger(Lv0ChooseShelter.class);
 
-    public KeyboardBasicIml(KeyboardBasicShelterOpsImpl keyboardBasicShelterOps) {
-        this.keyboardBasicShelterOps = keyboardBasicShelterOps;
+    private final Lv1ChooseInfo nextLvlKeyboard;
+
+    private final UniqueButtonCreator buttonCreator;
+
+    private static final List<String> BUTTONS = List.of("Приют для кошек", "Приют для собак");
+    private static final String TITLE = "Выберите приют:";
+
+    public Lv0ChooseShelter(Lv1ChooseInfo nextLvlKeyboard, UniqueButtonCreator buttonCreator) {
+        this.nextLvlKeyboard = nextLvlKeyboard;
+        this.buttonCreator = buttonCreator;
     }
+
 
     /**
      * Processes a list of updates, creates and sends unique inline keyboard buttons in response to each update to a specified chat.
@@ -34,16 +43,6 @@ public class KeyboardBasicIml implements KeyboardBasic {
     @Override
     public void processCommands(List<Update> updates, TelegramBot telegramBot) {
 
-//         AtomicLong chatId = new AtomicLong();
-//         updates.forEach(update -> {
-//             if (update.message() != null) {
-//                 chatId.set(update.message().chat().id());
-//                 createButtons(chatId.get(), telegramBot);
-//             } else if (update.callbackQuery() != null) {
-//                 chatId.set(update.callbackQuery().message().chat().id());
-//                 keyboardBasicShelterOps.processCommands(updates, telegramBot);
-//             }
-//         });
 
         /* для хранения уникальных chatId и List<Update> для хранения обновлений с запросами обратного вызова */
         Set<Long> chatIds = new HashSet<>();
@@ -63,7 +62,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
             }
         }
         if (!callbackUpdates.isEmpty()) {
-            keyboardBasicShelterOps.processCommands(callbackUpdates, telegramBot);
+           nextLvlKeyboard.processCommands(callbackUpdates, telegramBot);
         }
     }
 
@@ -83,23 +82,7 @@ public class KeyboardBasicIml implements KeyboardBasic {
      * @param telegramBot The TelegramBot instance used to send the message.
      */
     public void createButtons(long chatId, TelegramBot telegramBot) {
-        List<List<String>> buttonLabels = new ArrayList<>();
-        List<List<String>> callbackData = new ArrayList<>();
-
-        // Создание меток и данных обратного вызова для кнопок
-        buttonLabels.add(Arrays.asList("Приют для кошек", "Приют для собак"));
-        buttonLabels.add(Collections.singletonList("Позвать волонтера"));
-
-        callbackData.add(Arrays.asList("Кошачий приют", "Собачий приют"));
-        callbackData.add(Collections.singletonList("Вызов волонтера"));
-
-        // Создание клавиатуры с помощью CustomKeyboard.createKeyboard
-        SendMessage message = CustomKeyboard.createKeyboardInline(chatId, "Выберите приют:", buttonLabels, callbackData);
-        telegramBot.execute(message);
+        buttonCreator.createButtons(chatId,telegramBot, TITLE, BUTTONS, BUTTONS);
     }
 
-    @Override
-    public void callVolunteer() {
-
-    }
 }

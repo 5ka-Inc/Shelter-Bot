@@ -5,13 +5,16 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
 import ru.kaInc.shelterbot.service.UpdateHubService;
 import ru.kaInc.shelterbot.service.UserService;
-import ru.kaInc.shelterbot.service.implementation.keyboards.KeyboardBasicIml;
+import ru.kaInc.shelterbot.service.implementation.keyboards.Lv0ChooseShelter;
+import ru.kaInc.shelterbot.service.implementation.keyboards.UniversalKeyboard;
 
+import java.beans.ConstructorProperties;
 import java.util.List;
 
 /**
@@ -21,20 +24,23 @@ import java.util.List;
 public class UpdateHubServiceImpl implements UpdateHubService {
 
     UserService userService;
-    KeyboardBasic keyboardBasic;
+    KeyboardBasic lv0Keyboard;
+
+    UniversalKeyboard universalKeyboard;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
 
 
     /**
      * Constructor for creating an instance of UpdateHubServiceImpl with UserService and KeyboardBasic dependencies.
      *
-     * @param userService   The UserService used for managing user-related operations.
-     * @param keyboardBasic The KeyboardBasic used for handling keyboard interactions.
+     * @param userService The UserService used for managing user-related operations.
+     * @param lv0Keyboard The KeyboardBasic used for handling keyboard interactions.
      */
 
-    public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
+    public UpdateHubServiceImpl(UserService userService, Lv0ChooseShelter lv0Keyboard, UniversalKeyboard universalKeyboard) {
         this.userService = userService;
-        this.keyboardBasic = keyboardBasic;
+        this.lv0Keyboard = lv0Keyboard;
+        this.universalKeyboard = universalKeyboard;
     }
 
     /**
@@ -52,7 +58,9 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             if (update.message() != null && update.message().text() != null) {
                 processStart(update, updates, telegramBot);
             } else if (update.callbackQuery() != null) {
-                keyboardBasic.processCommands(updates, telegramBot);
+                //lv0Keyboard.processCommands(updates, telegramBot);
+                universalKeyboard.process(updates, telegramBot);
+
             }
         });
     }
@@ -118,21 +126,13 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     @Override
     public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
         if (update.message().text().equals("/start")) {
-            keyboardBasic.processCommands(updates, telegramBot);
+           // lv0Keyboard.processCommands(updates, telegramBot);
+            universalKeyboard.process(updates, telegramBot);
         } else {
             SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай"); // ВЕРНУТЬ В СТАТИЧЕСКУЮ ПЕРЕМЕННУЮ
             telegramBot.execute(message);
-            keyboardBasic.processCommands(updates, telegramBot);
-
-//         if (!update.message().text().equals(START_COMMAND)) {
-//             SendMessage message = new SendMessage(update.message().chat().id(), DEFAULT_RESPONSE);
-//             telegramBot.execute(message);
-
-            // Если задержка необходима, рассмотрите возможность асинхронного выполнения.
-            // Например, используя ScheduledExecutorService.
-            // Однако, если задержка не важна, рекомендуется убрать вызов Thread.sleep.
-
-//         keyboardBasic.processCommands(updates, telegramBot);
+            //lv0Keyboard.processCommands(updates, telegramBot);
+            universalKeyboard.process(updates, telegramBot);
         }
     }
 }
