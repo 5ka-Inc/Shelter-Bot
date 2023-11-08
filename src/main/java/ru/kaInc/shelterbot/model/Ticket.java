@@ -31,9 +31,8 @@ public class Ticket {
     @Column(name = "username")
     private String creatorsUsername;
 
-    @Column(name = "error_description")
-    private String errorDescription;
-
+    @Column(name = "issue_description")
+    private String issueDescription;
 
     /**
      * Поля пользователь и волонтер, являясь полями одного класса нужны для удобства отслеживания тикетов у волонтеров и пользователей. Технически можно обойтись без них.

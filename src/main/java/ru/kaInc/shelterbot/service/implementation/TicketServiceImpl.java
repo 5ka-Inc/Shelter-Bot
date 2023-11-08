@@ -1,7 +1,8 @@
 package ru.kaInc.shelterbot.service.implementation;
 
 import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.Ticket;
 import ru.kaInc.shelterbot.model.User;
@@ -13,29 +14,27 @@ import java.time.LocalDateTime;
 
 @Service
 @RequiredArgsConstructor
-@Slf4j
 public class TicketServiceImpl implements TicketService {
 
     private final TicketRepo ticketRepo;
 
     private final UserService userService;
 
+    private Logger logger = LoggerFactory.getLogger(TicketServiceImpl.class);
+
     @Override
-    public Ticket createTicket(String errorDescription, Long chatId) {
-        User user = userService.findByChatId(chatId);
+    public Ticket createTicket(String issueDescription, String username) {
         Ticket ticket = new Ticket();
-        ticket.setErrorDescription(errorDescription);
-        ticket.setUser(user);
+        ticket.setIssueDescription(issueDescription);
         ticket.setCreationTime(LocalDateTime.now());
-        ticket.setCreatorsUsername(user.getUsername());
+        ticket.setCreatorsUsername(username);
 
-        // Сохраняем тикет в базе данных
         ticketRepo.save(ticket);
+        logger.debug("ticket {} saved", ticket.getIssueDescription());
 
-        // Находим доступного волонтера
         User volunteer = userService.findAvailableVolunteer();
+        logger.debug("ticket {} assigned to a volunteer {}", ticket.getIssueDescription(), volunteer.getName());
 
-        // Присваиваем тикет волонтеру
         ticket.setVolunteer(volunteer);
         ticket.setReceivedByVolunteerTime(LocalDateTime.now());
         return ticketRepo.save(ticket);

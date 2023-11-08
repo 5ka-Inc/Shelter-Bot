@@ -59,12 +59,45 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             return;
         }
         updates.forEach(update -> {
-            if (update.message() != null && update.message().text() != null) {
-                processStart(update, updates, telegramBot);
-            } else if (update.callbackQuery() != null) {
-                keyboardBasic.processCommands(updates, telegramBot);
+            // Проверка на null для callbackQuery и message
+            if (update.callbackQuery() != null) {
+                String callbackData = update.callbackQuery().data();
+                if ("CALL_VOLUNTEER".equals(callbackData)) {
+                    processCallVolunteer(update, telegramBot);
+                } else {
+                    // Обработка других callback-запросов
+                    keyboardBasic.processCommands(updates, telegramBot);
+                }
+            } else if (update.message() != null && update.message().text() != null) {
+                Long chatId = update.message().chat().id();
+                if (awaitingDescription.getOrDefault(chatId, false)) {
+                    // Если ожидается описание проблемы от этого пользователя
+                    processCallVolunteer(update, telegramBot);
+                } else {
+                    // Обработка обычного текстового сообщения
+                    processStart(update, updates, telegramBot);
+                }
+            } else {
+                // Возможно, это другой тип обновления, который мы не обрабатываем
+                logger.debug("Received an update that is not a message or callbackQuery");
             }
         });
+//        updates.forEach(update -> {
+//            if (update.message() != null && update.message().text() != null) {
+//                processStart(update, updates, telegramBot);
+//            } else if (update.callbackQuery() != null) {
+//                // Определяем, является ли это запросом на вызов волонтера
+//                String callbackQueryData = update.callbackQuery().data();
+//                if ("CALL_VOLUNTEER".equals(callbackQueryData)) {
+//                    // Вызываем метод processCallVolunteer для обработки запроса
+//                    logger.debug("позвали волонтера");
+//                    processCallVolunteer(update, telegramBot);
+//                } else {
+//                    // Обработка других запросов обратного вызова
+//                    keyboardBasic.processCommands(updates, telegramBot);
+//                }
+//            }
+//        });
     }
 
     /**
@@ -152,37 +185,37 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public void processCallVolunteer(Update update, TelegramBot telegramBot) {
+        logger.debug("Method processCallVolunteer was invoked");
         if (update.callbackQuery() != null && "CALL_VOLUNTEER".equals(update.callbackQuery().data())) {
             Long chatId = update.callbackQuery().message().chat().id();
 
             // Помечаем, что ожидаем описание проблемы от этого пользователя
             awaitingDescription.put(chatId, true);
+            logger.debug("awaiting description true chat_id {}", chatId);
 
             // Запрашиваем описание проблемы
-            SendMessage promptForDescription = new SendMessage(chatId, "Опишите ваш вопрос:");
-            telegramBot.execute(promptForDescription);
+            telegramBot.execute(new SendMessage(chatId, "Опишите ваш вопрос:"));
         } else if (update.message() != null && awaitingDescription.getOrDefault(update.message().chat().id(), false)) {
             Long chatId = update.message().chat().id();
             String description = update.message().text();
+            String username = update.message().chat().username();
 
-            // Проверяем длину описания проблемы
             if (description.length() < 10) {
-                // Сообщаем пользователю, что описание слишком короткое
-                SendMessage tooShortDescription = new SendMessage(chatId, "Описание вашей проблемы слишком короткое. Пожалуйста, опишите подробнее (минимум 10 символов).");
-                telegramBot.execute(tooShortDescription);
+                telegramBot.execute(new SendMessage(chatId, "Описание вашей проблемы слишком короткое. Пожалуйста, опишите подробнее (минимум 10 символов)."));
             } else {
                 // Создаем тикет с полученным описанием
-                Ticket ticket = ticketService.createTicket(description, chatId);
+                Ticket ticket = ticketService.createTicket(description, username);
                 // Отправляем тикет волонтеру
                 sendTicketToVolunteer(ticket, telegramBot);
                 // Сбрасываем флаг ожидания описания
                 awaitingDescription.remove(chatId);
+                telegramBot.execute(new SendMessage(chatId, "Ваш запрос отправлен! Свободный волонтер свяжется с вами в ближайшее время"));
             }
         }
     }
 
     private void sendTicketToVolunteer(Ticket ticket, TelegramBot telegramBot) {
-        String messageText = "Новый тикет получен: " + ticket.getErrorDescription();
+        String messageText = "Новый тикет получен: " + ticket.getIssueDescription();
         telegramBot.execute(new SendMessage(ticket.getVolunteer().getChatId(), messageText));
     }
 }

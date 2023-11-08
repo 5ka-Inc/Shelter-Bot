@@ -11,4 +11,4 @@ ALTER TABLE users
 
 -- changeset fifimova:2
 ALTER TABLE tickets
-ADD COLUMN error_description TEXT;
+ADD COLUMN issue_description TEXT;
