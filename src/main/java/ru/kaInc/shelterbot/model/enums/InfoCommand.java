@@ -14,6 +14,18 @@ public enum InfoCommand {
     CONTACT_DETAILS("Принять и записать контактные данные для связи");
 
 
-    InfoCommand(String s) {
+    private String infoCommand;
+
+    InfoCommand(String infoCommand){
+        this.infoCommand=infoCommand;
+    }
+
+    public String getInfoCommand() {
+        return infoCommand;
+    }
+
+    @Override
+    public String toString() {
+        return super.toString();
     }
 }
