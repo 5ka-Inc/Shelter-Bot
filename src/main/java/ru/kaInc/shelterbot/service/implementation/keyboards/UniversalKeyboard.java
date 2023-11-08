@@ -40,7 +40,7 @@ public class UniversalKeyboard {
 
     private Callback defineCallback(String callback) {
         AtomicReference<Callback> result = new AtomicReference<>(Callback.DEFAULT_MENU);
-        menuMap.forEach((element, list) -> {
+        Arrays.stream(Callback.values()).forEach(element -> {
             if (element.name().equals(callback)) {
                 result.set(element);
             }

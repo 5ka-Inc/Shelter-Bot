@@ -43,6 +43,9 @@ public enum Callback {
 
 
     public List<Callback> getNextMenu() {
-        return nextMenu;
+        if (this.nextMenu != null) {
+            return nextMenu;
+        } else
+            return List.of(this);
     }
 }
