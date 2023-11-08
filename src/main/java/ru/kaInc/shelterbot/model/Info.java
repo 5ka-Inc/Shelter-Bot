@@ -2,7 +2,6 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ru.kaInc.shelterbot.model.enums.Type;
 
 import java.util.Objects;
 
@@ -22,8 +21,9 @@ public class Info {
     @Column(name = "info")
     private String info;
 
-    @Column(name = "type")
-    private Type type;
+    @ManyToOne
+    @JoinColumn(name = "shelter_id")
+    private Shelter shelter;
 
     @Override
     public boolean equals(Object o) {
