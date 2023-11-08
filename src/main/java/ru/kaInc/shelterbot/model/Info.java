@@ -2,6 +2,7 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
+import ru.kaInc.shelterbot.model.enums.Type;
 
 import java.util.Objects;
 
@@ -9,10 +10,6 @@ import java.util.Objects;
 @Data
 @Table(name = "info")
 public class Info {
-
-    Enum anEnum;
-
-    String enumText;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -25,8 +22,8 @@ public class Info {
     @Column(name = "info")
     private String info;
 
-    @Column(name = "shelter_type")
-    private Enum type;
+    @Column(name = "type")
+    private Type type;
 
     @Override
     public boolean equals(Object o) {
