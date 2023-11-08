@@ -47,6 +47,4 @@ public interface UpdateHubService {
      */
 
     void processStart(Update update, List<Update> updates, TelegramBot telegramBot);
-
-    void processCallVolunteer(Update update, TelegramBot telegramBot);
 }

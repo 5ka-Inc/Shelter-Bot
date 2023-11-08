@@ -3,7 +3,6 @@ package ru.kaInc.shelterbot.service.implementation;
 import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.model.enums.Role;
@@ -152,26 +151,6 @@ public class UserServiceImpl implements UserService {
 
         return userRepo.save(foundUser);
     }
-
-    /**
-     * Логика поиска волонтера с наименьшим количеством тикетов
-     * @return объект пользователя с ролью VOLUNTEER
-     */
-    @Override
-    public User findAvailableVolunteer() {
-        List<User> volunteers = userRepo.findLeastBusyVolunteers(Role.VOLUNTEER, PageRequest.of(0, 1));
-        return volunteers.isEmpty() ? null : volunteers.get(0);
-    }
-
-    @Override
-    public User findByChatId(Long chatId) {
-        User foundUser = userRepo.findByChatId(chatId);
-        if (foundUser == null) {
-            throw new EntityNotFoundException();
-        }
-        return foundUser;
-    }
-
 
     /**
      * Deletes a user from the bot's database based on their unique identifier.

@@ -43,9 +43,5 @@ public interface UserService {
 
     User updateUser(User user);
 
-    User findAvailableVolunteer();
-
-    User findByChatId(Long chatId);
-
     void deleteUser(Long id);
 }

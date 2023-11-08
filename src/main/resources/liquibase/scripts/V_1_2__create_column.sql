@@ -9,6 +9,3 @@ ALTER TABLE users
 ALTER TABLE users
     ADD COLUMN username TEXT;
 
--- changeset fifimova:2
-ALTER TABLE tickets
-ADD COLUMN error_description TEXT;
