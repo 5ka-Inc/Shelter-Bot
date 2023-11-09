@@ -5,16 +5,12 @@ import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.User;
-import ru.kaInc.shelterbot.service.KeyboardBasic;
 import ru.kaInc.shelterbot.service.UpdateHubService;
 import ru.kaInc.shelterbot.service.UserService;
-import ru.kaInc.shelterbot.service.implementation.keyboards.Lv0ChooseShelter;
-import ru.kaInc.shelterbot.service.implementation.keyboards.UniversalKeyboard;
+import ru.kaInc.shelterbot.service.implementation.keyboard.UniversalKeyboard;
 
-import java.beans.ConstructorProperties;
 import java.util.List;
 
 /**
@@ -24,8 +20,6 @@ import java.util.List;
 public class UpdateHubServiceImpl implements UpdateHubService {
 
     UserService userService;
-    KeyboardBasic lv0Keyboard;
-
     UniversalKeyboard universalKeyboard;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
 
@@ -34,12 +28,10 @@ public class UpdateHubServiceImpl implements UpdateHubService {
      * Constructor for creating an instance of UpdateHubServiceImpl with UserService and KeyboardBasic dependencies.
      *
      * @param userService The UserService used for managing user-related operations.
-     * @param lv0Keyboard The KeyboardBasic used for handling keyboard interactions.
      */
 
-    public UpdateHubServiceImpl(UserService userService, Lv0ChooseShelter lv0Keyboard, UniversalKeyboard universalKeyboard) {
+    public UpdateHubServiceImpl(UserService userService, UniversalKeyboard universalKeyboard) {
         this.userService = userService;
-        this.lv0Keyboard = lv0Keyboard;
         this.universalKeyboard = universalKeyboard;
     }
 

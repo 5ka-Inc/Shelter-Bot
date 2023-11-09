@@ -1,7 +1,5 @@
 package ru.kaInc.shelterbot.model.enums;
 
-import java.util.ArrayList;
-import java.util.List;
 
 
 
@@ -13,13 +11,14 @@ public enum Type {
     /**
      * The "CAT" type represents an entity related to cats.
      */
-    CAT(List.of("Знакомство", "Документы", "Рекомендации по транспортировке", "Рекомендации по дому", "Рекомендации по дому для калича", "Причины отказа", "Отправить контакты")),
+    CAT,
     /**
      * The "DOG" type represents an entity related to dogs.
      */
-    DOG(List.of("Знакомство", "Документы", "Рекомендации по транспортировке", "Рекомендации по дому", "Рекомендации по дому для калича", "Советы кинолога", "Проверенные кинологи", "Причины отказа", "Отправить контакты")),
+    DOG,
+
+    DEFAULT
     ;
 
-    Type(List<String> buttons) {
-    }
+
 }
