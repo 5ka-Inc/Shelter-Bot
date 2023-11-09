@@ -76,6 +76,17 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         });
     }
 
+
+//        updates.forEach(update -> {
+//            if (update.message() != null && update.message().text() != null) {
+//                processStart(update, updates, telegramBot);
+//            } else if (update.callbackQuery() != null) {
+//                universalKeyboard.process(updates, telegramBot);
+//
+//            }
+//        });
+
+
     /**
      * Processes the "start" command in a user interaction, calling addUserIfNew and handling keyboard interactions.
      *
