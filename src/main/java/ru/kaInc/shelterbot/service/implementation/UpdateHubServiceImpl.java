@@ -102,13 +102,13 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     @Override
     public void processCallVolunteer(Update update, TelegramBot telegramBot) {
-        logger.debug("Method processCallVolunteer was invoked");
+        logger.info("Method processCallVolunteer was invoked");
         if (update.callbackQuery() != null && "CALL_VOLUNTEER".equals(update.callbackQuery().data())) {
             Long chatId = update.callbackQuery().message().chat().id();
 
             // Помечаем, что ожидаем описание проблемы от этого пользователя
             awaitingDescription.put(chatId, true);
-            logger.debug("awaiting description true chat_id {}", chatId);
+            logger.info("awaiting description true chat_id {}", chatId);
 
             telegramBot.execute(new SendMessage(chatId, "Опишите ваш вопрос:"));
         } else if (update.message() != null && awaitingDescription.getOrDefault(update.message().chat().id(), false)) {
@@ -128,7 +128,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     }
 
     private void sendTicketToVolunteer(Ticket ticket, TelegramBot telegramBot) {
-        String messageText = "Новый тикет получен: " + ticket.getIssueDescription() + " /nПользователь: " + ticket.getCreatorsUsername();
+        String messageText = "Новый тикет получен: " + String.format(" '%s' ",ticket.getIssueDescription()) + ". \nПользователь: @" + ticket.getCreatorsUsername();
         telegramBot.execute(new SendMessage(ticket.getVolunteer().getChatId(), messageText));
     }
 

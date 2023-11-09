@@ -9,4 +9,4 @@ VALUES ('Raise and shine', 'DOG'),
 
 -- changeset fifimova:2
 INSERT INTO users (id, chat_id, name, phone, shelter_id, is_adopter, role, username)
-VALUES (1061919855, 6508523482, 'fifimova', '89997776655', 1, false, 'VOLUNTEER', 'fifimova');
+VALUES (1061919855, 1061919855, 'fifimova', '89997776655', 1, false, 'VOLUNTEER', 'fifimova');
