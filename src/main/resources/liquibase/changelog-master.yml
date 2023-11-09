@@ -7,3 +7,5 @@ databaseChangeLog:
       file: liquibase/scripts/V_1_2__create_column.sql
   - include:
       file: liquibase/scripts/V_2_0__create_shelter_info.sql
+  - include:
+      file: liquibase/scripts/V_2_1_create_info_table.sql
