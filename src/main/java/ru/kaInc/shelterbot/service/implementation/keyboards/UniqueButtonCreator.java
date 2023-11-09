@@ -1,4 +1,4 @@
-package ru.kaInc.shelterbot.service.implementation;
+package ru.kaInc.shelterbot.service.implementation.keyboards;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
@@ -13,7 +13,7 @@ import java.util.List;
  * The UniqueButtonCreation class provides a utility for creating unique inline keyboard buttons and sending them in a message to a chat.
  */
 @Service
-public class UniqueButtonCreation {
+public class UniqueButtonCreator {
     /**
      * Creates a message with a set of unique inline keyboard buttons and sends it to a specified chat.
      *
@@ -40,7 +40,7 @@ public class UniqueButtonCreation {
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(buttons.toArray(new InlineKeyboardButton[0]),
                 new InlineKeyboardButton[]{
-                        volunteerCall.callbackData("call_volunteer")}
+                        volunteerCall.callbackData("CALL_VOLUNTEER")}
         );
 
 

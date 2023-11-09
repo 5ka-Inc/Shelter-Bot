@@ -47,11 +47,11 @@ CREATE TABLE reports
 
 CREATE TABLE tickets
 (
-    id             bigint PRIMARY KEY,
+    id            BIGSERIAL PRIMARY KEY,
     creation_time timestamp not null,
-    received_time  timestamp,
-    user_id        bigint,
-    username       TEXT not null ,
-    volunteer_id   bigint
+    received_time timestamp,
+    user_id       bigint,
+    username      TEXT      not null,
+    volunteer_id  bigint
 );
 

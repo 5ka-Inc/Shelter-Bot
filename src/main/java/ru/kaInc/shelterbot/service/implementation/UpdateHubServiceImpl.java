@@ -6,12 +6,17 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ru.kaInc.shelterbot.model.Ticket;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.KeyboardBasic;
+import ru.kaInc.shelterbot.service.TicketService;
 import ru.kaInc.shelterbot.service.UpdateHubService;
 import ru.kaInc.shelterbot.service.UserService;
+import ru.kaInc.shelterbot.service.implementation.keyboards.KeyboardBasicIml;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * The UpdateHubServiceImpl class is an implementation of the UpdateHubService interface and is responsible for processing updates and managing user interactions in the bot's system.
@@ -21,7 +26,11 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     UserService userService;
     KeyboardBasic keyboardBasic;
+    TicketService ticketService;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
+
+    // Хранение ID чата, который ожидает ввода описания проблемы
+    private final Map<Long, Boolean> awaitingDescription = new HashMap<>();
 
 
     /**
@@ -29,11 +38,13 @@ public class UpdateHubServiceImpl implements UpdateHubService {
      *
      * @param userService   The UserService used for managing user-related operations.
      * @param keyboardBasic The KeyboardBasic used for handling keyboard interactions.
+     * @param ticketService
      */
 
-    public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic) {
+    public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic, TicketService ticketService) {
         this.userService = userService;
         this.keyboardBasic = keyboardBasic;
+        this.ticketService = ticketService;
     }
 
     /**
@@ -48,13 +59,81 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             return;
         }
         updates.forEach(update -> {
-            if (update.message() != null && update.message().text() != null) {
-                processStart(update, updates, telegramBot);
-            } else if (update.callbackQuery() != null) {
-                keyboardBasic.processCommands(updates, telegramBot);
+            if (update.callbackQuery() != null) {
+                String callbackData = update.callbackQuery().data();
+                if ("CALL_VOLUNTEER".equals(callbackData)) {
+                    processCallVolunteer(update, telegramBot);
+                } else {
+                    keyboardBasic.processCommands(updates, telegramBot);
+                }
+            } else if (update.message() != null && update.message().text() != null) {
+                Long chatId = update.message().chat().id();
+                if (awaitingDescription.getOrDefault(chatId, false)) {
+                    processCallVolunteer(update, telegramBot);
+                } else {
+                    processStart(update, updates, telegramBot);
+                }
+            } else {
+                logger.debug("Received an update that is not a message or callbackQuery");
             }
         });
     }
+
+    /**
+     * Processes the "start" command in a user interaction, calling addUserIfNew and handling keyboard interactions.
+     *
+     * @param update      The Telegram Update object representing a user's interaction.
+     * @param updates     A list of updates to be processed.
+     * @param telegramBot The TelegramBot instance responsible for handling updates and sending responses.
+     */
+    @Override
+    public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
+        if (update.message().text().equals("/start")) {
+            keyboardBasic.processCommands(updates, telegramBot);
+        } else {
+            handleOtherCommands(update, telegramBot);
+        }
+    }
+
+    private void handleOtherCommands(Update update, TelegramBot telegramBot) {
+        SendMessage message = new SendMessage(update.message().chat().id(), "Неизвестная команда. Используйте /help для списка команд.");
+        telegramBot.execute(message);
+    }
+
+    @Override
+    public void processCallVolunteer(Update update, TelegramBot telegramBot) {
+        logger.info("Method processCallVolunteer was invoked");
+        if (update.callbackQuery() != null && "CALL_VOLUNTEER".equals(update.callbackQuery().data())) {
+            Long chatId = update.callbackQuery().message().chat().id();
+
+            // Помечаем, что ожидаем описание проблемы от этого пользователя
+            awaitingDescription.put(chatId, true);
+            logger.info("awaiting description true chat_id {}", chatId);
+
+            telegramBot.execute(new SendMessage(chatId, "Опишите ваш вопрос и измените настройки приватности, чтобы волонтер смог написать вам:"));
+        } else if (update.message() != null && awaitingDescription.getOrDefault(update.message().chat().id(), false)) {
+            Long chatId = update.message().chat().id();
+            String description = update.message().text();
+            String username = update.message().chat().username();
+
+            if (description.length() < 10) {
+                logger.warn("description {} too short", description);
+                telegramBot.execute(new SendMessage(chatId, "Описание вашей проблемы слишком короткое. Пожалуйста, опишите подробнее (минимум 10 символов)."));
+            } else {
+                Ticket ticket = ticketService.createTicket(description, username);
+                sendTicketToVolunteer(ticket, telegramBot);
+                logger.info("ticket {} sent to available volunteer", ticket.getIssueDescription());
+                awaitingDescription.remove(chatId);
+                telegramBot.execute(new SendMessage(chatId, "Ваш запрос отправлен! Свободный волонтер свяжется с вами в ближайшее время"));
+            }
+        }
+    }
+
+    private void sendTicketToVolunteer(Ticket ticket, TelegramBot telegramBot) {
+        String messageText = "Новый тикет получен: " + String.format(" '%s' ",ticket.getIssueDescription()) + ". \nПользователь: @" + ticket.getCreatorsUsername();
+        telegramBot.execute(new SendMessage(ticket.getVolunteer().getChatId(), messageText));
+    }
+
 
     /**
      * Checks if the user associated with the given Update is present in the bot's database and adds them if not.
@@ -105,34 +184,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         User newUser = userService.addNewUser(user, chatId);
         logger.info("Added {} {}", newUser.getName(), newUser.getId());
         return newUser;
-    }
-
-    /**
-     * Processes the "start" command in a user interaction, calling addUserIfNew and handling keyboard interactions.
-     *
-     * @param update      The Telegram Update object representing a user's interaction.
-     * @param updates     A list of updates to be processed.
-     * @param telegramBot The TelegramBot instance responsible for handling updates and sending responses.
-     */
-    @Override
-    public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
-        if (update.message().text().equals("/start")) {
-            keyboardBasic.processCommands(updates, telegramBot);
-        } else {
-            SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай");
-            telegramBot.execute(message);
-            keyboardBasic.processCommands(updates, telegramBot);
-
-//         if (!update.message().text().equals(START_COMMAND)) {
-//             SendMessage message = new SendMessage(update.message().chat().id(), DEFAULT_RESPONSE);
-//             telegramBot.execute(message);
-
-            // Если задержка необходима, рассмотрите возможность асинхронного выполнения.
-            // Например, используя ScheduledExecutorService.
-            // Однако, если задержка не важна, рекомендуется убрать вызов Thread.sleep.
-
-//         keyboardBasic.processCommands(updates, telegramBot);
-        }
     }
 }
 
