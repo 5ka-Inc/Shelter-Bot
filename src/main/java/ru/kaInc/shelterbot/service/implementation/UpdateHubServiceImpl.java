@@ -6,13 +6,11 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
-import ru.kaInc.shelterbot.model.Ticket;
 import ru.kaInc.shelterbot.model.User;
-import ru.kaInc.shelterbot.service.KeyboardBasic;
 import ru.kaInc.shelterbot.service.TicketService;
 import ru.kaInc.shelterbot.service.UpdateHubService;
 import ru.kaInc.shelterbot.service.UserService;
-import ru.kaInc.shelterbot.service.implementation.keyboards.KeyboardBasicIml;
+import ru.kaInc.shelterbot.service.implementation.keyboard.UniversalKeyboard;
 
 import java.util.HashMap;
 import java.util.List;
@@ -25,7 +23,7 @@ import java.util.Map;
 public class UpdateHubServiceImpl implements UpdateHubService {
 
     UserService userService;
-    KeyboardBasic keyboardBasic;
+    UniversalKeyboard universalKeyboard;
     TicketService ticketService;
     private final Logger logger = LoggerFactory.getLogger(UpdateHubServiceImpl.class);
 
@@ -36,14 +34,12 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     /**
      * Constructor for creating an instance of UpdateHubServiceImpl with UserService and KeyboardBasic dependencies.
      *
-     * @param userService   The UserService used for managing user-related operations.
-     * @param keyboardBasic The KeyboardBasic used for handling keyboard interactions.
-     * @param ticketService
+     * @param userService The UserService used for managing user-related operations.
      */
 
-    public UpdateHubServiceImpl(UserService userService, KeyboardBasicIml keyboardBasic, TicketService ticketService) {
+    public UpdateHubServiceImpl(UserService userService, UniversalKeyboard universalKeyboard, TicketService ticketService) {
         this.userService = userService;
-        this.keyboardBasic = keyboardBasic;
+        this.universalKeyboard = universalKeyboard;
         this.ticketService = ticketService;
     }
 
@@ -64,7 +60,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
                 if ("CALL_VOLUNTEER".equals(callbackData)) {
                     processCallVolunteer(update, telegramBot);
                 } else {
-                    keyboardBasic.processCommands(updates, telegramBot);
+                    universalKeyboard.process(updates, telegramBot);
                 }
             } else if (update.message() != null && update.message().text() != null) {
                 Long chatId = update.message().chat().id();
@@ -89,15 +85,12 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     @Override
     public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
         if (update.message().text().equals("/start")) {
-            keyboardBasic.processCommands(updates, telegramBot);
+            universalKeyboard.process(updates, telegramBot);
         } else {
-            handleOtherCommands(update, telegramBot);
+            SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай"); // ВЕРНУТЬ В СТАТИЧЕСКУЮ ПЕРЕМЕННУЮ
+            telegramBot.execute(message);
+            universalKeyboard.process(updates, telegramBot);
         }
-    }
-
-    private void handleOtherCommands(Update update, TelegramBot telegramBot) {
-        SendMessage message = new SendMessage(update.message().chat().id(), "Неизвестная команда. Используйте /help для списка команд.");
-        telegramBot.execute(message);
     }
 
     @Override

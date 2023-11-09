@@ -1,9 +1,6 @@
 package ru.kaInc.shelterbot.repo;
 
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.model.enums.Role;
 
@@ -22,13 +19,5 @@ public interface UserRepo extends JpaRepository<User, Long> {
      */
     List<User> findUsersByRole(Role role);
 
-    @Query("SELECT u FROM User u " +
-            "LEFT JOIN Ticket t ON t.volunteer = u " +
-            "WHERE u.role = 'VOLUNTEER' " +
-            "GROUP BY u " +
-            "ORDER BY COUNT(t) ASC, u.id ASC")
-    List<User> findLeastBusyVolunteers(@Param("volunteerRole") Role volunteerRole, Pageable pageable);
-
-    User findByChatId(Long chatId);
 
 }

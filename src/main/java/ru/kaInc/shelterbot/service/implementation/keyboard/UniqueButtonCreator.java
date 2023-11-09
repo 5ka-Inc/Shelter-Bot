@@ -1,4 +1,4 @@
-package ru.kaInc.shelterbot.service.implementation.keyboards;
+package ru.kaInc.shelterbot.service.implementation.keyboard;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.request.InlineKeyboardButton;
@@ -40,7 +40,7 @@ public class UniqueButtonCreator {
 
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup(buttons.toArray(new InlineKeyboardButton[0]),
                 new InlineKeyboardButton[]{
-                        volunteerCall.callbackData("CALL_VOLUNTEER")}
+                        volunteerCall.callbackData("call_volunteer")}
         );
 
 
