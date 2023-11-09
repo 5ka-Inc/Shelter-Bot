@@ -16,16 +16,16 @@ public class InfoServiceImpl implements InfoService {
 
     private final Logger logger = LoggerFactory.getLogger(InfoServiceImpl.class);
 
-    InfoRepo infoRepo;
+    private final InfoRepo infoRepo;
 
     @Override
     public List<Info> findInfoByShelterType(String type) {
         return null;
     }
 
-    public boolean isInfoPresent(Long id) {
-        return infoRepo.existsById(id);
-    }
+   public Info get(Long id) {
+        return infoRepo.findById(id).get();
+   }
 
 
 }

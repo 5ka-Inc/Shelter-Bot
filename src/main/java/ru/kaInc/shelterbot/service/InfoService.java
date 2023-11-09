@@ -7,4 +7,6 @@ import java.util.List;
 public interface InfoService {
 
     List<Info> findInfoByShelterType (String type);
+
+    public Info get(Long id);
 }
