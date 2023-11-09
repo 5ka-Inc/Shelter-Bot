@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.PostConstruct;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -34,15 +35,21 @@ public class Ticket {
     @Column(name = "issue_description")
     private String issueDescription;
 
+    @Column(name = "is_closed")
+    private Boolean isClosed;
+
     /**
      * Поля пользователь и волонтер, являясь полями одного класса нужны для удобства отслеживания тикетов у волонтеров и пользователей. Технически можно обойтись без них.
      *
      */
     @ManyToOne()
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
+
     @ManyToOne
     @JoinColumn(name = "volunteer_id")
+    @JsonIgnore
     private User volunteer;
 
     /**

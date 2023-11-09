@@ -12,3 +12,7 @@ ALTER TABLE users
 -- changeset fifimova:2
 ALTER TABLE tickets
 ADD COLUMN issue_description TEXT;
+
+-- changeset fifimova:3
+ALTER TABLE tickets
+    ADD COLUMN is_closed BOOLEAN;
