@@ -20,7 +20,7 @@ public class Info {
     private InfoCommand command;
 
     @Column(name = "info")
-    private InfoCommand infoCommand;
+    private String infoCommand;
 
     @ManyToOne
     @JoinColumn(name = "shelter_id")
