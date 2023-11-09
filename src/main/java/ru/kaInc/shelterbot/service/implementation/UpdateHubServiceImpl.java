@@ -6,6 +6,7 @@ import com.pengrad.telegrambot.request.SendMessage;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ru.kaInc.shelterbot.model.Ticket;
 import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.TicketService;
 import ru.kaInc.shelterbot.service.UpdateHubService;
