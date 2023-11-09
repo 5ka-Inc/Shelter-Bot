@@ -35,10 +35,10 @@ public class TicketServiceImpl implements TicketService {
         ticket.setIsClosed(false);
 
         ticketRepo.save(ticket);
-        logger.debug("ticket {} saved", ticket.getIssueDescription());
+        logger.info("ticket {} saved", ticket.getIssueDescription());
 
         User volunteer = userService.findAvailableVolunteer();
-        logger.debug("ticket {} assigned to a volunteer {}", ticket.getIssueDescription(), volunteer.getName());
+        logger.info("ticket {} assigned to a volunteer {}", ticket.getIssueDescription(), volunteer.getName());
 
         ticket.setVolunteer(volunteer);
         ticket.setReceivedByVolunteerTime(LocalDateTime.now());

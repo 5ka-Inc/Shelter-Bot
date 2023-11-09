@@ -110,17 +110,19 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             awaitingDescription.put(chatId, true);
             logger.info("awaiting description true chat_id {}", chatId);
 
-            telegramBot.execute(new SendMessage(chatId, "Опишите ваш вопрос:"));
+            telegramBot.execute(new SendMessage(chatId, "Опишите ваш вопрос и измените настройки приватности, чтобы волонтер смог написать вам:"));
         } else if (update.message() != null && awaitingDescription.getOrDefault(update.message().chat().id(), false)) {
             Long chatId = update.message().chat().id();
             String description = update.message().text();
             String username = update.message().chat().username();
 
             if (description.length() < 10) {
+                logger.warn("description {} too short", description);
                 telegramBot.execute(new SendMessage(chatId, "Описание вашей проблемы слишком короткое. Пожалуйста, опишите подробнее (минимум 10 символов)."));
             } else {
                 Ticket ticket = ticketService.createTicket(description, username);
                 sendTicketToVolunteer(ticket, telegramBot);
+                logger.info("ticket {} sent to available volunteer", ticket.getIssueDescription());
                 awaitingDescription.remove(chatId);
                 telegramBot.execute(new SendMessage(chatId, "Ваш запрос отправлен! Свободный волонтер свяжется с вами в ближайшее время"));
             }
