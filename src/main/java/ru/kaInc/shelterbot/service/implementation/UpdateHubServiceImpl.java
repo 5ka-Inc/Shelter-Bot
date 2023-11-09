@@ -50,7 +50,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             if (update.message() != null && update.message().text() != null) {
                 processStart(update, updates, telegramBot);
             } else if (update.callbackQuery() != null) {
-                //lv0Keyboard.processCommands(updates, telegramBot);
                 universalKeyboard.process(updates, telegramBot);
 
             }
@@ -118,12 +117,10 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     @Override
     public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
         if (update.message().text().equals("/start")) {
-           // lv0Keyboard.processCommands(updates, telegramBot);
             universalKeyboard.process(updates, telegramBot);
         } else {
             SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай"); // ВЕРНУТЬ В СТАТИЧЕСКУЮ ПЕРЕМЕННУЮ
             telegramBot.execute(message);
-            //lv0Keyboard.processCommands(updates, telegramBot);
             universalKeyboard.process(updates, telegramBot);
         }
     }
