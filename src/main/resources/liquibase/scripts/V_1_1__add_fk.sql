@@ -32,3 +32,7 @@ ALTER TABLE photo
     ADD COLUMN file_size BIGINT;
 ALTER TABLE photo
     ADD COLUMN media_type TEXT;
+
+--changeset Ependi:4:7
+ALTER TABLE photo
+    drop column media_type;

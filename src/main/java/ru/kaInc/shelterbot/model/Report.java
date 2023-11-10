@@ -17,7 +17,7 @@ import java.util.Objects;
 @Table(name = "reports")
 public class Report {
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
+//    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "date")
@@ -41,7 +41,6 @@ public class Report {
     @ManyToOne
     @JoinColumn(name = "user_id")
     private User user;
-
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -36,17 +36,17 @@ public class ReportServiceImpl implements ReportService {
             throw new IllegalArgumentException("Report was null");
         }
 
-        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
-            throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
-        }
+//        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
+//            throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
+//        }
 
-        if (report.getPhoto() == null) {
-            throw new EntityNotFoundException("Photo not found");
-        }
-
-        if (timestamp.compareTo(report.getDate()) > 0) {
-            throw new IllegalArgumentException("Еhe specified time has not arrived");
-        }
+//        if (report.getPhoto() == null) {
+//            throw new EntityNotFoundException("Photo not found");
+//        }
+//
+//        if (timestamp.compareTo(report.getDate()) > 0) {
+//            throw new IllegalArgumentException("Еhe specified time has not arrived");
+//        }
 
         return reportRepo.save(report);
     }

@@ -55,7 +55,6 @@ public class PhotoServiceImpl implements PhotoService {
         Photo newPhoto = new Photo();
 
         newPhoto.setId(id);
-        newPhoto.setMediaType(multipartFile.getContentType());
         newPhoto.setFileSize(multipartFile.getSize());
         newPhoto.setData(generateDataForDB(multipartFile));
 

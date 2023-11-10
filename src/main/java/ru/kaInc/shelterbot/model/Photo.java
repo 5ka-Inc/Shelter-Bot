@@ -20,9 +20,6 @@ public class Photo {
     @Column(name = "file_size")
     private Long fileSize;
 
-    @Column(name = "media_type")
-    private String mediaType;
-
     @Lob
     @Column(name = "data")
     private byte[] data;
