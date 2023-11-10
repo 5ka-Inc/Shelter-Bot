@@ -48,4 +48,6 @@ public interface UserService {
     User findByChatId(Long chatId);
 
     void deleteUser(Long id);
+
+    User save(User user);
 }

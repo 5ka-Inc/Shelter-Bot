@@ -1,0 +1,11 @@
+databaseChangeLog:
+  - changeSet:
+      id: "1"
+      author: "fifimova"
+      context: "test"  # Этот changeSet будет применяться только в тестовом контексте
+      changes:
+        - sqlFile:
+            path: test_script.sql
+            relativeToChangelogFile: true
+            splitStatements: true
+            stripComments: true

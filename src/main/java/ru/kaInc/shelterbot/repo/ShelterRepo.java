@@ -2,6 +2,7 @@ package ru.kaInc.shelterbot.repo;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import ru.kaInc.shelterbot.model.Shelter;
+import ru.kaInc.shelterbot.model.enums.Type;
 
 import java.util.List;
 
@@ -16,5 +17,5 @@ public interface ShelterRepo extends JpaRepository<Shelter, Long> {
      * @param type The type of shelters to filter by (e.g., "animal shelter," "homeless shelter").
      * @return A list of Shelter objects that match the specified shelter type.
      */
-    List<Shelter> findShelterByType(String type);
+    List<Shelter> findShelterByType(Type type);
 }

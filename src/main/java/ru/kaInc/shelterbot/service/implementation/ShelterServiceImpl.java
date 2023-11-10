@@ -5,6 +5,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.Shelter;
+import ru.kaInc.shelterbot.model.enums.Type;
 import ru.kaInc.shelterbot.repo.ShelterRepo;
 import ru.kaInc.shelterbot.service.ShelterService;
 
@@ -62,7 +63,7 @@ public class ShelterServiceImpl implements ShelterService {
      * @throws EntityNotFoundException if no shelters with the specified type are found.
      */
     @Override
-    public List<Shelter> findByShelterType(String type) {
+    public List<Shelter> findByShelterType(Type type) {
         List<Shelter> shelters = shelterRepo.findShelterByType(type);
         if (shelters.isEmpty()) {
             throw new EntityNotFoundException(String.format("Not found shelters with type %s", type));

@@ -14,6 +14,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import ru.kaInc.shelterbot.model.Shelter;
 import ru.kaInc.shelterbot.model.User;
+import ru.kaInc.shelterbot.model.enums.Type;
 import ru.kaInc.shelterbot.service.ShelterService;
 
 import java.util.List;
@@ -84,9 +85,9 @@ public class ShelterController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(implementation = Shelter.class)))),
             @ApiResponse(responseCode = "404", description = "Приюты не найдены")})
-    @GetMapping("/type/{type}")
+    @GetMapping("/type")
     public ResponseEntity<List<Shelter>> findByShelterType(@Parameter(description = "Искомый тип (из enum Type)")
-                                                           @PathVariable("type") String type) {
+                                                           @RequestParam("type") Type type) {
         List<Shelter> foundShelters = service.findByShelterType(type);
         if (foundShelters.isEmpty()) {
             return ResponseEntity.notFound().build();
