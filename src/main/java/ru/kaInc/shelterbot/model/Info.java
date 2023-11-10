@@ -2,7 +2,7 @@ package ru.kaInc.shelterbot.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
-import ru.kaInc.shelterbot.model.enums.InfoCommand;
+import ru.kaInc.shelterbot.model.enums.Command;
 
 import java.util.Objects;
 
@@ -16,9 +16,11 @@ public class Info {
     @Column(name = "id")
     private Long id;
 
+    @Enumerated(EnumType.ORDINAL)
     @Column(name = "command_info")
-    private InfoCommand command;
+    private Command command;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "info")
     private String infoCommand;
 
