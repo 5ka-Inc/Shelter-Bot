@@ -50,6 +50,7 @@ public enum Callback {
 
 
     DEFAULT_MENU("Выберите приют", List.of(SHELTER_DOG, SHELTER_CAT)),
+    SEND_REPORT("Отправить отчёт")
     ;
 
     private final String text;

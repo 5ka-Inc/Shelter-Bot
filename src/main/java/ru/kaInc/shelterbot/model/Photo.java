@@ -23,6 +23,9 @@ public class Photo {
     @Column(name = "media_type")
     private String mediaType;
 
+    @Column(name = "file_id")
+    private String fileId; // Добавлено поле для хранения file_id от Telegram
+
     @Lob
     @Column(name = "data")
     private byte[] data;

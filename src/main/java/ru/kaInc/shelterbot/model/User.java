@@ -52,6 +52,10 @@ public class User {
     @OneToMany(mappedBy = "user")
     private Set<Ticket> UsrTickets;
 
+    public User(Long chatId) {
+        this.chatId = chatId;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;

@@ -1,5 +1,7 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import com.pengrad.telegrambot.model.PhotoSize;
+import com.pengrad.telegrambot.model.Update;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -10,9 +12,9 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
 import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
+import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.repo.PhotoRepo;
 import ru.kaInc.shelterbot.service.PhotoService;
-
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -85,9 +87,8 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
 
-
     @Override
-    public Photo refactorPhoto(Long id, MultipartFile photo){
+    public Photo refactorPhoto(Long id, MultipartFile photo) {
         logger.info("Photo saved {}", id);
 
         Photo newPhoto = new Photo();
@@ -103,4 +104,32 @@ public class PhotoServiceImpl implements PhotoService {
         return photoRepo.save(newPhoto);
     }
 
+    /**
+     * Сохраняет фотографию на основе информации об обновлении от Telegram.
+     *
+     * @param update Обновление от Telegram содержащее фото.
+     * @param report Отчет, с которым ассоциируется фото.
+     * @return сохраненный объект Photo.
+     */
+    @Override
+    public Photo savePhoto(Update update, Report report) {
+        // Проверяем, содержит ли update информацию о фотографии
+        if (update.message() != null && update.message().photo() != null && update.message().photo().length > 0) {
+            PhotoSize[] photos = update.message().photo();
+            PhotoSize largestPhoto = photos[photos.length - 1]; // Telegram отправляет несколько версий фото, выбираем самую большую
+
+            Photo photo = new Photo();
+            photo.setFileId(largestPhoto.fileId()); // Сохраняем file_id самой большой фотографии
+            photo.setFileSize(largestPhoto.fileSize()); // Сохраняем размер файла
+            // Дополнительные атрибуты можно установить здесь, если это необходимо
+
+            // Сохраняем объект Photo в базе данных
+            logger.info("photo {} saved", photo.getFileId());
+            return photoRepo.save(photo);
+        } else {
+            // Обработка случая, когда фотография не была отправлена
+            logger.info("No photo found in the update message");
+            throw new IllegalArgumentException("No photo found in the update message");
+        }
+    }
 }

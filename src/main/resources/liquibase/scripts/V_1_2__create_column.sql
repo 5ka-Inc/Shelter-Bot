@@ -11,8 +11,12 @@ ALTER TABLE users
 
 -- changeset fifimova:2
 ALTER TABLE tickets
-ADD COLUMN issue_description TEXT;
+    ADD COLUMN issue_description TEXT;
 
 -- changeset fifimova:3
 ALTER TABLE tickets
     ADD COLUMN is_closed BOOLEAN;
+
+--changeset fifimova:4
+ALTER TABLE photo
+    ADD COLUMN file_id TEXT;
