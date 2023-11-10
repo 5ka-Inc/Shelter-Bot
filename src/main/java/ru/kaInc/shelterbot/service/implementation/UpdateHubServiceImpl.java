@@ -141,7 +141,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         telegramBot.execute(new SendMessage(ticket.getVolunteer().getChatId(), messageText));
     }
 
-    private void startReportCreation(Long chatId, TelegramBot telegramBot) {
+    public void startReportCreation(Long chatId, TelegramBot telegramBot) {
         // Создание нового объекта отчёта и сохранение его в состоянии
         Report report = new Report();
         report.setUser(new User(chatId));
@@ -151,7 +151,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         sendMessage(chatId, "Пожалуйста, введите информацию о диете:", telegramBot);
     }
 
-    private void continueReportCreation(Update update, TelegramBot telegramBot) {
+    public void continueReportCreation(Update update, TelegramBot telegramBot) {
         Long chatId = update.message().chat().id();
         Report report = reportCreationState.get(chatId);
 
@@ -168,10 +168,10 @@ public class UpdateHubServiceImpl implements UpdateHubService {
             sendMessage(chatId, "Пожалуйста, загрузите фотографию:", telegramBot);
         } else if (update.message().photo() != null) {
             // Обработка получения фотографии и сохранение в БД
-            Photo photo = new Photo(); // Предполагается, что класс Photo существует
-            photo.setFileId(update.message().photo()[0].fileId()); // Сохраняем ID первого фото из массива
-            report.setPhoto(photo);
-
+//            Photo photo = new Photo(); // Предполагается, что класс Photo существует
+//            photo.setFileId(update.message().photo()[0].fileId()); // Сохраняем ID первого фото из массива
+//            photo.setReport(report);
+//            report.setPhoto(photo);
             try {
                 photoService.savePhoto(update, report);
                 reportService.createReport(report);

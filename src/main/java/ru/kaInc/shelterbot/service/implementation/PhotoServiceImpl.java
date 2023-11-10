@@ -15,6 +15,7 @@ import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.repo.PhotoRepo;
 import ru.kaInc.shelterbot.service.PhotoService;
+import ru.kaInc.shelterbot.service.ReportService;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
@@ -28,9 +29,11 @@ public class PhotoServiceImpl implements PhotoService {
 
     private long MAX_SIZE = 1024 * 600;
     private final PhotoRepo photoRepo;
+    private final ReportService reportService;
 
-    public PhotoServiceImpl(PhotoRepo photoRepo) {
+    public PhotoServiceImpl(PhotoRepo photoRepo, ReportService reportService) {
         this.photoRepo = photoRepo;
+        this.reportService = reportService;
     }
 
     @Override
@@ -113,22 +116,22 @@ public class PhotoServiceImpl implements PhotoService {
      */
     @Override
     public Photo savePhoto(Update update, Report report) {
-        // Проверяем, содержит ли update информацию о фотографии
         if (update.message() != null && update.message().photo() != null && update.message().photo().length > 0) {
             PhotoSize[] photos = update.message().photo();
-            PhotoSize largestPhoto = photos[photos.length - 1]; // Telegram отправляет несколько версий фото, выбираем самую большую
+            PhotoSize largestPhoto = photos[photos.length - 1];
 
             Photo photo = new Photo();
-            photo.setFileId(largestPhoto.fileId()); // Сохраняем file_id самой большой фотографии
-            photo.setFileSize(largestPhoto.fileSize()); // Сохраняем размер файла
-            // Дополнительные атрибуты можно установить здесь, если это необходимо
+            photo.setFileId(largestPhoto.fileId());
+            photo.setFileSize(largestPhoto.fileSize());
+            photo.setReport(report); // Установка связи с отчетом
+            logger.info("Saving photo with fileId: {}", photo.getFileId());
 
-            // Сохраняем объект Photo в базе данных
-            logger.info("photo {} saved", photo.getFileId());
-            return photoRepo.save(photo);
+            Photo savedPhoto = photoRepo.save(photo);
+            report.setPhoto(savedPhoto); // Обновление отчета с новой фотографией
+            reportService.updatedReport(report); // Сохранение обновленного отчета
+            return savedPhoto;
         } else {
-            // Обработка случая, когда фотография не была отправлена
-            logger.info("No photo found in the update message");
+            logger.warn("No photo found in the update message");
             throw new IllegalArgumentException("No photo found in the update message");
         }
     }
