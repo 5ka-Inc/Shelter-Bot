@@ -26,6 +26,7 @@ import java.io.IOException;
 @RequestMapping("/photo")
 @Tag(name = "фото", description = "Операция с фото")
 public class PhotoController {
+
     private final PhotoService photoService;
 
     @Operation(summary = "Получить фото")
