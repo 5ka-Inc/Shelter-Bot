@@ -1,6 +1,7 @@
 package ru.kaInc.shelterbot.service;
 
 import ru.kaInc.shelterbot.model.Shelter;
+import ru.kaInc.shelterbot.model.enums.Type;
 
 import java.util.List;
 
@@ -42,7 +43,8 @@ public interface ShelterService {
      * @return A list of Shelter objects that match the specified shelter type.
      */
 
-    List<Shelter> findByShelterType(String type);
+
+    List<Shelter> findByShelterType(Type type);
 
     /**
      * Updates the information of an existing shelter in the bot's database.

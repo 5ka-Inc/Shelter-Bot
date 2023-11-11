@@ -82,7 +82,7 @@ public class ShelterServiceImplTest {
 
     @Test
     public void testFindByShelterTypeFound() {
-        String type = "DOG";
+        Type type = Type.DOG;
         when(shelterRepo.findShelterByType(type)).thenReturn(List.of(shelterDog));
 
         List<Shelter> foundShelters = shelterService.findByShelterType(type);
@@ -93,9 +93,9 @@ public class ShelterServiceImplTest {
 
     @Test
     public void testFindByShelterTypeNotFound() {
-        when(shelterRepo.findShelterByType(anyString())).thenReturn(List.of());
+        when(shelterRepo.findShelterByType(any(Type.class))).thenReturn(List.of());
 
-        assertThrows(EntityNotFoundException.class, () -> shelterService.findByShelterType(anyString()));
+        assertThrows(EntityNotFoundException.class, () -> shelterService.findByShelterType(any(Type.class)));
     }
 
     @Test

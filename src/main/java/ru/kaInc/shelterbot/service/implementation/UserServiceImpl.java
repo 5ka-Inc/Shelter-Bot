@@ -158,4 +158,9 @@ public class UserServiceImpl implements UserService {
         }
         userRepo.deleteById(id);
     }
+
+    @Override
+    public User save(User user) {
+        return userRepo.save(user);
+    }
 }
