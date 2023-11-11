@@ -16,6 +16,7 @@ public class Info {
     @Column(name = "id")
     private Long id;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "command_info")
     private Callback command;
 
