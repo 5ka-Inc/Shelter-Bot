@@ -1,16 +1,18 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import com.pengrad.telegrambot.model.Update;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.model.Report;
+import ru.kaInc.shelterbot.repo.PhotoRepo;
 import ru.kaInc.shelterbot.repo.ReportRepo;
-import ru.kaInc.shelterbot.repo.UserRepo;
 import ru.kaInc.shelterbot.service.ReportService;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -19,11 +21,11 @@ public class ReportServiceImpl implements ReportService {
     private final Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
 
     private final ReportRepo reportRepo;
-    private final UserRepo userRepo;
+    private final PhotoRepo photoRepo;
 
-    public ReportServiceImpl(ReportRepo reportRepo, UserRepo userRepo) {
+    public ReportServiceImpl(ReportRepo reportRepo, PhotoRepo photoRepo) {
         this.reportRepo = reportRepo;
-        this.userRepo = userRepo;
+        this.photoRepo = photoRepo;
     }
 
     @Override
@@ -33,6 +35,18 @@ public class ReportServiceImpl implements ReportService {
         validateReport(report);
 
         return reportRepo.save(report);
+    }
+
+    @Override
+    @Transactional
+    public void saveReportWithPhoto(Report report, Photo photo) {
+        photo.setReport(report);
+        photoRepo.save(photo);
+        logger.info("Запись фотографии сохранена с ID: {}", photo.getId());
+
+        report.setPhoto(photo);
+        reportRepo.save(report);
+        logger.info("Запись отчета сохранена с ID: {}", report.getId());
     }
 
     @Override
@@ -92,18 +106,37 @@ public class ReportServiceImpl implements ReportService {
         if (report == null) {
             throw new IllegalArgumentException("Report was null");
         }
-
-        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
-            throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
-        }
-
         if (report.getPhoto() == null) {
-            throw new IllegalArgumentException("Photo not found");
+            //throw new IllegalArgumentException("Photo not found");
+            System.err.println("PHOTO");
         }
-
-        Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        if (currentTimestamp.compareTo(report.getDate()) > 0) {
+        LocalDateTime localDateTime = LocalDateTime.now();
+        if (localDateTime.compareTo(report.getDate()) < 0) {
             throw new IllegalArgumentException("The specified time has not arrived");
         }
+    }
+
+    public String sendDiet(Update update, Report report) {
+        if (update.message().text() != null) {
+            report.setDiet(update.message().text());
+            return "Информация сохранена";
+        }
+        return "Ошибочщка";
+    }
+
+    public String sendBehavior(Update update, Report report) {
+        if (update.message().text() != null) {
+            report.setBehavior(update.message().text());
+            return "Информация сохранена";
+        }
+        return "Ошибочщка";
+    }
+
+    public String sendDHealth(Update update, Report report) {
+        if (update.message().text() != null) {
+            report.setHealth(update.message().text());
+            return "Информация сохранена";
+        }
+        return "Ошибочщка";
     }
 }

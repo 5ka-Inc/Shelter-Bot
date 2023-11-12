@@ -26,14 +26,14 @@ CREATE TABLE shelters
 
 CREATE TABLE photo
 (
-    id        bigint PRIMARY KEY,
+    id        BIGSERIAL PRIMARY KEY,
     data      bytea,
     report_id bigint
 );
 
 CREATE TABLE reports
 (
-    id              bigint PRIMARY KEY,
+    id              BIGSERIAL PRIMARY KEY,
     date            timestamp,
     diet            text,
     health          text,

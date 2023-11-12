@@ -4,7 +4,7 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 /**
@@ -16,12 +16,13 @@ import java.util.Objects;
 @NoArgsConstructor
 @Table(name = "reports")
 public class Report {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     @Column(name = "date")
-    private Timestamp date;
+    private LocalDateTime date;
 
     @Column(name = "diet")
     private String diet;
@@ -34,6 +35,7 @@ public class Report {
 
     @Column(name = "is_report_valid")
     private boolean isReportValid;
+
     @OneToOne(mappedBy = "report")
     @JoinColumn(name = "photo_id")
     private Photo photo;

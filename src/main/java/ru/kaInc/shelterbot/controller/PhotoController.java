@@ -44,8 +44,7 @@ public class PhotoController {
 
         HttpHeaders headers = new HttpHeaders();
 
-        // Устанавливаем заголовок Content-Type для изображения
-        headers.setContentType(MediaType.IMAGE_JPEG); // Предполагая, что формат изображения JPEG
+        headers.setContentType(MediaType.parseMediaType(foundPhoto.getMediaType()));
 
         // Возвращаем изображение в байтах и устанавливаем заголовки
         return new ResponseEntity<>(foundPhoto.getData(), headers, HttpStatus.OK);
