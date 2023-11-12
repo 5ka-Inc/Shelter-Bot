@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.service;
 
+import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.Update;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,5 +22,5 @@ public interface PhotoService {
 
     Photo refactorPhoto(Long id, MultipartFile photo);
 
-    Photo savePhoto(Update update, Report report);
+    Photo savePhoto(Update update, Report report, TelegramBot telegramBot);
 }

@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.service;
 
+import com.pengrad.telegrambot.model.Update;
 import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.Report;
 
@@ -19,4 +20,10 @@ public interface ReportService {
     List<Report> getReportsByUserId(Long userId);
 
     void deleteReportById(Long id);
+
+    String sendDiet(Update update, Report report);
+
+    String sendBehavior(Update update, Report report);
+
+    String sendDHealth(Update update, Report report);
 }

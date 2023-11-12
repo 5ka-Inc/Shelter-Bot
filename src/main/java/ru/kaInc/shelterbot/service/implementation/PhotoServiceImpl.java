@@ -1,7 +1,9 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
+import com.pengrad.telegrambot.request.GetFile;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
@@ -30,6 +32,7 @@ public class PhotoServiceImpl implements PhotoService {
     private long MAX_SIZE = 1024 * 600;
     private final PhotoRepo photoRepo;
     private final ReportService reportService;
+
 
     public PhotoServiceImpl(PhotoRepo photoRepo, ReportService reportService) {
         this.photoRepo = photoRepo;
@@ -115,16 +118,25 @@ public class PhotoServiceImpl implements PhotoService {
      * @return сохраненный объект Photo.
      */
     @Override
-    public Photo savePhoto(Update update, Report report) {
-        if (update.message() != null && update.message().photo() != null && update.message().photo().length > 0) {
+    public Photo savePhoto(Update update, Report report, TelegramBot telegramBot){
+        if (update.message() != null && update.message().photo() != null) {
             PhotoSize[] photos = update.message().photo();
             PhotoSize largestPhoto = photos[photos.length - 1];
+            GetFile photoFile = new GetFile(largestPhoto.fileId());
 
             Photo photo = new Photo();
             photo.setFileId(largestPhoto.fileId());
             photo.setFileSize(largestPhoto.fileSize());
+            try {
+                photo.setData(telegramBot.getFileContent(telegramBot.execute(photoFile).file()));
+            } catch (IOException e) {
+                logger.error(e.getMessage());
+            }
             photo.setReport(report); // Установка связи с отчетом
+            report.setPhoto(photo);
             logger.info("Saving photo with fileId: {}", photo.getFileId());
+
+            System.err.println(photo);
 
             Photo savedPhoto = photoRepo.save(photo);
             report.setPhoto(savedPhoto); // Обновление отчета с новой фотографией

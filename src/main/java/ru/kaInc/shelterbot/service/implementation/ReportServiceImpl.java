@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import com.pengrad.telegrambot.model.Update;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import org.springframework.stereotype.Service;
 import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.repo.ReportRepo;
 import ru.kaInc.shelterbot.repo.UserRepo;
+import ru.kaInc.shelterbot.service.PhotoService;
 import ru.kaInc.shelterbot.service.ReportService;
 
 import java.sql.Timestamp;
@@ -19,11 +21,13 @@ public class ReportServiceImpl implements ReportService {
     private final Logger logger = LoggerFactory.getLogger(ReportServiceImpl.class);
 
     private final ReportRepo reportRepo;
+
     private final UserRepo userRepo;
 
     public ReportServiceImpl(ReportRepo reportRepo, UserRepo userRepo) {
         this.reportRepo = reportRepo;
         this.userRepo = userRepo;
+
     }
 
     @Override
@@ -93,17 +97,44 @@ public class ReportServiceImpl implements ReportService {
             throw new IllegalArgumentException("Report was null");
         }
 
-        if (userRepo.findById(report.getUser().getId()).isEmpty()) {
+/*       if (userRepo.findById(report.getUser().getId()).isEmpty()) {
             throw new EntityNotFoundException(String.format("User with id %s not found", report.getUser().getId()));
-        }
+
+        }*/
 
         if (report.getPhoto() == null) {
-            throw new IllegalArgumentException("Photo not found");
+            //throw new IllegalArgumentException("Photo not found");
+            System.err.println("PHOTO");
         }
 
         Timestamp currentTimestamp = new Timestamp(System.currentTimeMillis());
-        if (currentTimestamp.compareTo(report.getDate()) > 0) {
+        if (currentTimestamp.compareTo(report.getDate()) < 0) {
             throw new IllegalArgumentException("The specified time has not arrived");
         }
+
+    }
+
+    public String sendDiet(Update update, Report report) {
+        if (update.message().text() != null) {
+            report.setDiet(update.message().text());
+            return "Информация сохранена";
+        }
+        return "Ошибочщка";
+    }
+
+    public String sendBehavior(Update update, Report report) {
+        if (update.message().text() != null) {
+            report.setBehavior(update.message().text());
+            return "Информация сохранена";
+        }
+        return "Ошибочщка";
+    }
+
+    public String sendDHealth(Update update, Report report) {
+        if (update.message().text() != null) {
+            report.setHealth(update.message().text());
+            return "Информация сохранена";
+        }
+        return "Ошибочщка";
     }
 }

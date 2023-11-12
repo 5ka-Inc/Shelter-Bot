@@ -3,6 +3,7 @@ package ru.kaInc.shelterbot.model;
 import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.springframework.http.MediaType;
 
 import java.util.Objects;
 
