@@ -20,3 +20,7 @@ ALTER TABLE tickets
 --changeset fifimova:4
 ALTER TABLE photo
     ADD COLUMN file_id TEXT;
+
+--changeset fifimova:5
+ALTER TABLE photo
+    ADD COLUMN file_path TEXT;

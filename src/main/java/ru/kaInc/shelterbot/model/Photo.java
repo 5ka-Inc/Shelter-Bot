@@ -1,9 +1,7 @@
 package ru.kaInc.shelterbot.model;
 
-import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.springframework.http.MediaType;
 
 import java.util.Objects;
 
@@ -14,7 +12,9 @@ import java.util.Objects;
 @Data
 @Table(name = "photo")
 public class Photo {
+
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
     private Long id;
 
@@ -24,14 +24,17 @@ public class Photo {
     @Column(name = "media_type")
     private String mediaType;
 
+    @Column(name = "file_path")
+    private String filePath;
+
     @Column(name = "file_id")
     private String fileId; // Добавлено поле для хранения file_id от Telegram
 
     @Lob
     @Column(name = "data")
     private byte[] data;
+
     @OneToOne
-    @JsonBackReference
     @JoinColumn(name = "report_id")
     private Report report;
 

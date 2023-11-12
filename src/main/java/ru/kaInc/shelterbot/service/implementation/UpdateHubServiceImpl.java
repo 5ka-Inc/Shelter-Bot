@@ -1,13 +1,10 @@
 package ru.kaInc.shelterbot.service.implementation;
 
-import com.pengrad.telegrambot.BotUtils;
 import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.File;
+import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
-import com.pengrad.telegrambot.response.GetFileResponse;
-import org.hibernate.type.descriptor.DateTimeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -18,9 +15,7 @@ import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.service.*;
 import ru.kaInc.shelterbot.service.implementation.keyboard.UniversalKeyboard;
 
-import javax.swing.plaf.PanelUI;
-import java.sql.Timestamp;
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -86,11 +81,10 @@ public class UpdateHubServiceImpl implements UpdateHubService {
                     createNewUSer(update.callbackQuery().from(), update.callbackQuery().message().chat().id());
 
 
-
                 } else {
                     universalKeyboard.process(updates, telegramBot);
                 }
-            } else if (update.message() != null && update.message().text() != null) {
+            } else if (update.message() != null || update.message().text() != null || update.message().photo() != null) {
                 Long chatId = update.message().chat().id();
                 if (awaitingDescription.getOrDefault(chatId, false)) {
                     processCallVolunteer(update, telegramBot);
@@ -110,7 +104,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
         try {
             System.err.println(update.message().photo());
             GetFile photo = new GetFile(update.message().photo()[1].fileId());
-//https://api.telegram.org/file/bot6508523482:AAEdiJs6uCnv6VNeFSCqEwPVlxrAD7-H14k/photos/file_0.jpg
             telegramBot.getFileContent(telegramBot.execute(photo).file());
             System.err.println(telegramBot.getFullFilePath(telegramBot.execute(photo).file()));
         } catch (Exception e) {
@@ -127,7 +120,7 @@ public class UpdateHubServiceImpl implements UpdateHubService {
      */
     @Override
     public void processStart(Update update, List<Update> updates, TelegramBot telegramBot) {
-        if (update.message().text().equals("/start")) {
+        if (update.message().text() != null && update.message().text().equals("/start")) {
             universalKeyboard.process(updates, telegramBot);
         } else {
             SendMessage message = new SendMessage(update.message().chat().id(), "Айнц - цвай - драй - ничего не панимай"); // ВЕРНУТЬ В СТАТИЧЕСКУЮ ПЕРЕМЕННУЮ
@@ -171,48 +164,52 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     }
 
     public void startReportCreation(Update update, TelegramBot telegramBot) {
-        // Создание нового объекта отчёта и сохранение его в состоянии
+        Long chatId = update.callbackQuery().message().chat().id();
         Report report = new Report();
-        report.setUser(userService.findById(update.callbackQuery().from().id()));
-        reportCreationState.put(update.callbackQuery().message().chat().id(), report);
+        report.setUser(userService.findById(chatId));
+        reportCreationState.put(chatId, report);
 
+        sendMessage(chatId, "Пожалуйста, введите информацию о диете:", telegramBot);
     }
 
     public void continueReportCreation(Update update, TelegramBot telegramBot) {
         Long chatId = update.message().chat().id();
         Report report = reportCreationState.get(chatId);
-        report.setDate(new Timestamp(System.currentTimeMillis()));
+        PhotoSize[] photos = update.message().photo();
 
-        // Проверяем, какая информация уже заполнена
+        report.setDate(LocalDateTime.now());
+        logger.info("Report state: Diet={}, Health={}, Behavior={}, Photos={}", report.getDiet(), report.getHealth(), report.getBehavior(), photos != null);
 
-        sendMessage(chatId, "Пожалуйста, введите информацию о здоровье:", telegramBot);
-        sendMessage(chatId, reportService.sendDHealth(update, report), telegramBot);
+        if (report.getDiet() == null) {
+            report.setDiet(update.message().text());
+            logger.info("user sent diet {}", report.getDiet());
 
-        sendMessage(chatId, "Пожалуйста, введите информацию о поведении:", telegramBot);
-        sendMessage(chatId, reportService.sendBehavior(update, report), telegramBot);
+            sendMessage(chatId, "Пожалуйста, введите информацию о здоровье:", telegramBot);
+        } else if (report.getHealth() == null) {
+            report.setHealth(update.message().text());
+            logger.info("user sent health {}", report.getHealth());
 
-        sendMessage(chatId, "Пожалуйста, введите информацию о диете:", telegramBot);
-        sendMessage(chatId, reportService.sendDiet(update, report), telegramBot);
+            sendMessage(chatId, "Пожалуйста, введите информацию о поведении:", telegramBot);
+        } else if (report.getBehavior() == null) {
+            report.setBehavior(update.message().text());
+            logger.info("user sent behavior {}", report.getBehavior());
 
-        reportService.createReport(report);
-/*        try {
-            photoService.savePhoto(update, report, telegramBot);
-            reportService.createReport(report);
+            sendMessage(chatId, "Пожалуйста, загрузите фотографию:", telegramBot);
+        } else if (photos != null) {
+            logger.info("photo loading");
+            Photo photo = photoService.savePhoto(chatId, photos, telegramBot);
+            reportService.saveReportWithPhoto(report, photo);
             sendMessage(chatId, "Ваш отчёт сохранён и отправлен на проверку волонтёрам.", telegramBot);
-        } catch (
-                Exception e) {
-            sendMessage(chatId, "Произошла ошибка при сохранении отчёта: " + e.getMessage(), telegramBot);
-        }*/
+            reportCreationState.remove(chatId);
 
-/*        Ticket ticket = ticketService.createTicket("Отправлен новый отчет", update.message().chat().username());
+            Ticket ticket = ticketService.createTicket("Отправлен новый отчет. \nПрисвоен id: " + report.getId(),
+                    update.message().chat().username());
 
-        sendTicketToVolunteer(ticket, telegramBot);
-        logger.info("ticket {} sent to available volunteer", ticket.getIssueDescription());
-        // Очистка состояния после создания отчёта
-        reportCreationState.remove(chatId);*/
-
-        //sendMessage(chatId, "Не удалось распознать ввод, попробуйте снова.", telegramBot);
-
+            sendTicketToVolunteer(ticket, telegramBot);
+            logger.info("ticket {} sent to available volunteer", ticket.getIssueDescription());
+        } else {
+            sendMessage(chatId, "Пожалуйста, отправьте фотографию.", telegramBot);
+        }
     }
 
     private void sendMessage(Long chatId, String text, TelegramBot telegramBot) {
