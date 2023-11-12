@@ -42,7 +42,8 @@ public class TicketServiceImpl implements TicketService {
 
         ticket.setVolunteer(volunteer);
         ticket.setReceivedByVolunteerTime(LocalDateTime.now());
-        return ticketRepo.save(ticket);
+        ticketRepo.save(ticket);
+        return ticket;
     }
 
     @Override

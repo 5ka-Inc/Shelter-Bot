@@ -88,7 +88,7 @@ public class UserController {
     public ResponseEntity<List<User>> getUsersByRole(@Parameter(description = "Искомая роль (из enum Role)")
                                                      @PathVariable("role") Role role) {
         List<User> foundUsers = service.findUsersByRole(role);
-        if (foundUsers == null) {
+        if (foundUsers.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(foundUsers);

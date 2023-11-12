@@ -93,11 +93,10 @@ public class TicketController {
             @ApiResponse(responseCode = "404", description = "Тикет не найден")})
     @PatchMapping("/close/{id}")
     public ResponseEntity<?> closeTicket(@PathVariable("id") Long id) {
-        Ticket existingTicket = ticketService.findById(id);
-        if (existingTicket == null) {
+        Ticket closedTicket = ticketService.closeTicket(id);
+        if (closedTicket == null) {
             return ResponseEntity.notFound().build();
         }
-        Ticket closedTicket = ticketService.closeTicket(id);
         return ResponseEntity.ok(closedTicket);
     }
 }

@@ -1,10 +1,11 @@
 package ru.kaInc.shelterbot.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.pengrad.telegrambot.TelegramBot;
+import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -16,8 +17,12 @@ import ru.kaInc.shelterbot.model.Shelter;
 import ru.kaInc.shelterbot.model.enums.Type;
 import ru.kaInc.shelterbot.service.ShelterService;
 
+import java.util.Collections;
+
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.BDDMockito.given;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -30,14 +35,11 @@ public class ShelterControllerIntegrationTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
+    @MockBean
     private ShelterService shelterService;
 
-    @MockBean
-    private TelegramBot telegramBot;
-
     private Shelter shelter;
-    private Shelter nonExisting;
+    private Shelter nonExistingShelter;
 
     @BeforeEach
     public void setup() {
@@ -48,10 +50,14 @@ public class ShelterControllerIntegrationTest {
 
         shelterService.createShelter(shelter);
 
-        nonExisting = new Shelter();
-        nonExisting.setId(38384748L);
-        nonExisting.setName("Test Shelter");
-        nonExisting.setType(Type.CAT);
+        nonExistingShelter = new Shelter();
+        nonExistingShelter.setId(999L);
+
+        given(shelterService.findAll()).willReturn(Collections.singletonList(shelter));
+        given(shelterService.findById(shelter.getId())).willReturn(shelter);
+        given(shelterService.findByShelterType(shelter.getType())).willReturn(Collections.singletonList(shelter));
+        given(shelterService.updateShelter(any(Shelter.class))).willReturn(shelter);
+
     }
 
     @Test
@@ -108,7 +114,40 @@ public class ShelterControllerIntegrationTest {
     public void changeShelter_ShouldReturnNotFoundWhenShelterDoesNotExist() throws Exception {
         mockMvc.perform(put("/shelter")
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(asJsonString(nonExisting)))
+                        .content(asJsonString(nonExistingShelter)))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void findAll_ShouldReturnNotFoundWhenNoShelters() throws Exception {
+        given(shelterService.findAll()).willReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/shelter"))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void findShelterById_ShouldReturnNotFoundWhenShelterDoesNotExist() throws Exception {
+        given(shelterService.findById(nonExistingShelter.getId())).willReturn(null);
+
+        mockMvc.perform(get("/shelter/id/{id}", nonExistingShelter.getId()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void findByShelterType_ShouldReturnNotFoundWhenNoSheltersOfThatType() throws Exception {
+        given(shelterService.findByShelterType(Type.CAT)).willReturn(Collections.emptyList());
+
+        mockMvc.perform(get("/shelter/type")
+                        .param("type", Type.CAT.toString()))
+                .andExpect(status().isNotFound());
+    }
+
+    @Test
+    public void deleteShelter_ShouldReturnNotFoundWhenShelterDoesNotExist() throws Exception {
+        Mockito.doThrow(new EntityNotFoundException()).when(shelterService).deleteShelter(nonExistingShelter.getId());
+
+        mockMvc.perform(delete("/shelter/delete/{id}", nonExistingShelter.getId()))
                 .andExpect(status().isNotFound());
     }
 

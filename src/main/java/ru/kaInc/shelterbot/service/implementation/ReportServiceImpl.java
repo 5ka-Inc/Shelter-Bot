@@ -82,7 +82,7 @@ public class ReportServiceImpl implements ReportService {
     @Override
     @Transactional
     public void deleteReportById(Long id) {
-        if (reportRepo.findById(id).isEmpty()) {
+        if (getReportById(id) == null) {
             throw new EntityNotFoundException(String.format("Report with id %s not found", id));
         }
         reportRepo.deleteById(id);
