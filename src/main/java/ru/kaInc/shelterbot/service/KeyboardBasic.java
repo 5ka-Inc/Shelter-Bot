@@ -10,6 +10,7 @@ import java.util.List;
  * It provides functionality for handling user updates and calling volunteers.
  */
 
+
 public interface KeyboardBasic {
 
     /**
@@ -19,10 +20,5 @@ public interface KeyboardBasic {
      * @param telegramBot The TelegramBot instance responsible for processing updates and sending responses.
      */
     void processCommands(List<Update> update, TelegramBot telegramBot);
-
-    /**
-     * Initiates a call for volunteers or assistance, typically used in emergency situations or to request help.
-     */
-
-    void callVolunteer();
 }
+
