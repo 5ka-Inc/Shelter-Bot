@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,8 +25,6 @@ public class InfoServiceImpl implements InfoService {
     }
 
    public Info get(Long id) {
-        return infoRepo.findById(id).get();
+       return infoRepo.findById(id).orElseThrow(EntityNotFoundException::new);
    }
-
-
 }

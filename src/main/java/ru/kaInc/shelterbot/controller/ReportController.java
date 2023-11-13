@@ -32,7 +32,7 @@ public class ReportController {
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(implementation = Report.class)))),
             @ApiResponse(responseCode = "404", description = "Отчеты не найдены")})
-    @GetMapping("get-all")
+    @GetMapping
     public ResponseEntity<List<Report>> getAll() {
         List<Report> reports = reportService.getAll();
         if (reports.isEmpty()) {
@@ -47,7 +47,7 @@ public class ReportController {
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Report.class))}),
             @ApiResponse(responseCode = "404", description = "Отчет не найден")})
-    @GetMapping("id/{id}")
+    @GetMapping("/{id}")
     public ResponseEntity<Report> findReportById(@Parameter(description = "Идентификатор отчета")
                                                  @PathVariable("id") Long id) {
         Report report = reportService.getReportById(id);
@@ -80,10 +80,10 @@ public class ReportController {
                     content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             schema = @Schema(implementation = Report.class))}),
             @ApiResponse(responseCode = "404", description = "Отчет не найден")})
-    @GetMapping("user-id/{id}")
+    @GetMapping("user/{id}")
 
     public ResponseEntity<List<Report>> findReportByUserId(@Parameter(description = "Идентификатор пользователя")
-                                                     @PathVariable("id") Long id) {
+                                                           @PathVariable("id") Long id) {
         List<Report> report = reportService.getReportsByUserId(id);
         if (report.isEmpty()) {
             return ResponseEntity.notFound().build();
@@ -92,13 +92,67 @@ public class ReportController {
         return ResponseEntity.ok(report);
     }
 
+    @Operation(summary = "Получить все отчеты пользователя по username в telegram")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Отчеты найдены",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = Report.class)))),
+            @ApiResponse(responseCode = "404", description = "Отчеты не найдены")})
+    @GetMapping("/username")
+    public ResponseEntity<?> findReportByUsername(@Parameter(description = "username пользователя в telegram")
+                                                  @RequestParam("username") String username
+    ) {
+        List<Report> foundReports = reportService.findReportsByUsername(username);
+        if (foundReports.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(foundReports);
+    }
+
+    @Operation(summary = "Получить проверенные и одобренные отчеты по username пользователя в telegram")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Отчеты найдены",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = Report.class)))),
+            @ApiResponse(responseCode = "404", description = "Отчеты не найдены")})
+    @GetMapping("/username/valid")
+    public ResponseEntity<?> findValidReportsByUsername(@Parameter(description = "username пользователя в telegram")
+                                                  @RequestParam("username") String username
+    ) {
+        List<Report> foundReports = reportService.findValidReportsByUsername(username);
+        if (foundReports.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+
+        return ResponseEntity.ok(foundReports);
+    }
+
+    @Operation(summary = "Поставить отметку на отчете")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Отчет изменен",
+                    content = {@Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            schema = @Schema(implementation = Report.class))}),
+            @ApiResponse(responseCode = "404", description = "Отчет не найден")})
+    @PatchMapping("/validate/{id}")
+    public ResponseEntity<?> checkReport(@PathVariable("id") Long id,
+                                         @Parameter(description = "true - отчет соответствует требованиям, false - не соответствует")
+                                         @RequestParam Boolean isValid
+    ) {
+        Report checkedReport = reportService.checkReport(id, isValid);
+        if (checkedReport == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(checkedReport);
+    }
+
     @Operation(summary = "Удалить отчет")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Отчет удален",
                     content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
                             array = @ArraySchema(schema = @Schema(implementation = Report.class)))),
             @ApiResponse(responseCode = "404", description = "Отчет не найдены")})
-    @DeleteMapping("delete/{id}")
+    @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReportById(@Parameter(description = "Идентификатор отчета")
                                                  @PathVariable Long id) {
         Report foundReport = reportService.getReportById(id);

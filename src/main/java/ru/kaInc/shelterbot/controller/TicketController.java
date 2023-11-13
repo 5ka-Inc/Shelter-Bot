@@ -85,6 +85,21 @@ public class TicketController {
         return ResponseEntity.ok(tickets);
     }
 
+    @Operation(summary = "Получить все нерешенные тикеты, присвоенные волонтеру")
+    @ApiResponses(value = {
+            @ApiResponse(responseCode = "200", description = "Записи найдены",
+                    content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                            array = @ArraySchema(schema = @Schema(implementation = Ticket.class)))),
+            @ApiResponse(responseCode = "404", description = "Записи не найдены")})
+    @GetMapping("/volunteer/open/{id}")
+    public ResponseEntity<?> findAllOpen(@PathVariable("id") Long id) {
+        List<Ticket> tickets = ticketService.findAllOpen(id);
+        if (tickets.isEmpty()) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(tickets);
+    }
+
     @Operation(summary = "Закрыть тикет")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Тикет закрыт",

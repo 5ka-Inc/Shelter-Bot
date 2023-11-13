@@ -12,10 +12,10 @@ import ru.kaInc.shelterbot.model.User;
 import ru.kaInc.shelterbot.repo.ReportRepo;
 import ru.kaInc.shelterbot.repo.UserRepo;
 
-import java.sql.Timestamp;
 import java.util.List;
 import java.util.Optional;
 
+import static java.time.LocalDateTime.*;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -50,7 +50,7 @@ class ReportServiceImplTest {
         report.setId(reportId);
         report.setUser(user);
         report.setPhoto(new Photo());
-        report.setDate(new Timestamp(System.currentTimeMillis() + 100000)); // Future timestamp for testing
+        report.setDate(now()); // Future timestamp for testing
 
         when(userRepo.findById(userId)).thenReturn(Optional.of(user));
     }

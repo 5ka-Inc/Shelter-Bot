@@ -18,7 +18,13 @@ public interface ReportService {
 
     Report getReportById(Long id);
 
+    List<Report> findReportsByUsername(String username);
+
+    List<Report> findValidReportsByUsername(String username);
+
     Optional<Report> updatedReport(Report report);
+
+    Report checkReport(Long id, Boolean isValid);
 
     List<Report> getReportsByUserId(Long userId);
 

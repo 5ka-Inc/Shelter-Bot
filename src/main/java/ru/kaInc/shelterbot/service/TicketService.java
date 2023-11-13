@@ -16,4 +16,6 @@ public interface TicketService {
     List<Ticket> findByUsername(String username);
 
     List<Ticket> findByVolunteer(Long id);
+
+    List<Ticket> findAllOpen(Long id);
 }
