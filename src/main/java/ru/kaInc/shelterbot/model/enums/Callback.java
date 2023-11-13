@@ -3,6 +3,7 @@ package ru.kaInc.shelterbot.model.enums;
 
 import lombok.Getter;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -23,7 +24,7 @@ public enum Callback {
 
     ADDRESS("Адрес"),
     TIME("Рабочее время"),
-    ANIMAL_INTRODUCTION("Правила знакомства с животным, до того как забрать его из приюта"),
+    ANIMAL_INTRODUCTION("Правила знакомства с животным"),
     PASSPORT("Паспорт"),
     SNILS("Снилс"),
     CERTIFICATE("Справка, что не дурак"),
@@ -38,32 +39,19 @@ public enum Callback {
 
     //Пункты меню с уникальными кнопками в зависимости от вида животного
 
-    DOCUMENTS_REQUIRED("Список документов, необходимых для того, чтобы взять животное из приюта",
+    DOCUMENTS_REQUIRED("Список документов для усыновления",
             List.of(PASSPORT, SNILS),
 
             Map.of(
                     Type.DOG, List.of(CERTIFICATE),
                     Type.CAT, List.of(WHISCAS))),
-    TRAINING_TIPS("Советы кинолога по первичному общению с собакой", Type.DOG),
+    TRAINING_TIPS("Советы кинолога по общению с собакой", Type.DOG),
     DOG_TRAINERS("Рекомендации по проверенным кинологам для дальнейшего обращения к ним", Type.DOG),
 
     // Пункты меню, вызывающие другие меню:
 
     INFO_SHELTER("Информация о приюте", List.of(ADDRESS, TIME)),
-    INFO_ADOPTION("Информация об усыновлении", new Object() {
-        List<Callback> evaluate() {
-            List<Callback> callbacks = new java.util.ArrayList<>();
-            callbacks.add(DOCUMENTS_REQUIRED);
-            callbacks.add(ANIMAL_INTRODUCTION);
-            callbacks.add(TRANSPORTATION);
-            callbacks.add(PUPPY_KITTEN);
-            callbacks.add(ADULT_PET);
-            callbacks.add(DISABLED_PET);
-            callbacks.add(REASONS_FOR_DENIAL);
-            callbacks.add(CONTACT_DETAILS);
-            return callbacks;
-        }
-    }.evaluate()),
+    INFO_ADOPTION("Информация об усыновлении"),
 
     CHOOSE_INFO("Что вы хотите узнать?", List.of(INFO_ADOPTION, INFO_SHELTER)),
     SEND_REPORT("Отправить отчёт", List.of(REPORT_INFO, ADD_REPORT)),
@@ -73,7 +61,7 @@ public enum Callback {
      * Если нужно создать пункт меню, который вызывает еще одно меню, то пункты следующего уровня должны быть в листе
      * колбеков после названия пункта.
      */
-    DEV("Dev_menu", List.of(INFO_SHELTER, SEND_REPORT)),
+    DEV("Я усыновитель", List.of(INFO_SHELTER, SEND_REPORT)),
 
 
     // Пункты меню, отвечающие за выбор приюта:
@@ -83,13 +71,13 @@ public enum Callback {
 
     DEFAULT_MENU("Выберите приют", List.of(SHELTER_DOG, SHELTER_CAT, DEV)),
 
-    TRANSPORTATION("Список рекомендаций по транспортировке животного"),
-    PUPPY_KITTEN("Список рекомендаций по обустройству дома для щенка/котёнка"),
-    ADULT_PET("Список рекомендаций по обустройству дома для взрослого животного"),
-    DISABLED_PET("Список рекомендаций по обустройству дома для животного с ограниченными возможностями (зрение, передвижение)"),
+    TRANSPORTATION("Транспортировка животного"),
+    PUPPY_KITTEN("Обустройство дома для щенка/котёнка"),
+    ADULT_PET("Обустройство дома для взрослого животного"),
+    DISABLED_PET("Обустройство дома для животного с ограниченными возможностями (зрение, передвижение)"),
 
-    REASONS_FOR_DENIAL("Список причин, почему могут отказать и не дать забрать животное из приюта"),
-    CONTACT_DETAILS("Принять и записать контактные данные для связи"),
+    REASONS_FOR_DENIAL("Почему могут отказать забрать животное из приюта"),
+    CONTACT_DETAILS("Записать контактные данные для связи"),
     INVALID_REPORT ("Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо." +
             " Пожалуйста, подойди ответственнее к этому занятию. В противном случае волонтеры приюта" +
             " будут обязаны самолично проверять условия содержания животного"),
@@ -136,7 +124,23 @@ public enum Callback {
         this.uniqueCallbacks = uniqueCallbacks;
     }
 
+    private static List<Callback> initInfoAdoption() {
+        List<Callback> callbacks = new ArrayList<>();
+        callbacks.add(DOCUMENTS_REQUIRED);
+        callbacks.add(ANIMAL_INTRODUCTION);
+        callbacks.add(TRANSPORTATION);
+        callbacks.add(PUPPY_KITTEN);
+        callbacks.add(ADULT_PET);
+        callbacks.add(DISABLED_PET);
+        callbacks.add(REASONS_FOR_DENIAL);
+        callbacks.add(CONTACT_DETAILS);
+        return callbacks;
+    }
+
     public List<Callback> getNextMenu() {
+        if (this == INFO_ADOPTION && this.nextMenu == null) {
+            this.nextMenu = initInfoAdoption();
+        }
         return Objects.requireNonNullElseGet(this.nextMenu, () -> List.of(this));
     }
 }

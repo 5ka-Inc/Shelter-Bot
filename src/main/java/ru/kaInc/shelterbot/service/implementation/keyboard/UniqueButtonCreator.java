@@ -23,31 +23,43 @@ public class UniqueButtonCreator {
      * @param buttonLabels A list of labels for the inline keyboard buttons, where each label is unique.
      * @param callbackData A list of callback data associated with each button label, used to identify button actions.
      */
-    public void createButtons(long chatId, TelegramBot telegramBot, String messageText, List<String> buttonLabels, List<String> callbackData) {
+    public void createButtons(long chatId, TelegramBot telegramBot, String messageText,
+                              List<String> buttonLabels, List<String> callbackData) {
 
         if (buttonLabels.size() != callbackData.size()) {
             throw new IllegalArgumentException("Number of button labels must be equal to number of callbacks");
         }
 
-        List<InlineKeyboardButton> buttons = new ArrayList<>();
+        List<List<InlineKeyboardButton>> rows = new ArrayList<>();
+        List<InlineKeyboardButton> currentRow = new ArrayList<>();
 
         for (int i = 0; i < buttonLabels.size(); i++) {
             InlineKeyboardButton button = new InlineKeyboardButton(buttonLabels.get(i));
             button.callbackData(callbackData.get(i));
-            buttons.add(button);
+
+            // Добавляем кнопку в текущую строку
+            currentRow.add(button);
+
+            // Проверяем, нужно ли начать новую строку
+            if (currentRow.size() == 2 || i == buttonLabels.size() - 1) {
+                rows.add(currentRow);
+                currentRow = new ArrayList<>();
+            }
         }
-        InlineKeyboardButton volunteerCall = new InlineKeyboardButton("Позвать волонтера");
 
-        InlineKeyboardMarkup markup = new InlineKeyboardMarkup(buttons.toArray(new InlineKeyboardButton[0]),
-                new InlineKeyboardButton[]{
-                        volunteerCall.callbackData("CALL_VOLUNTEER")}
-        );
+        // Добавляем отдельную кнопку для вызова волонтера
+        InlineKeyboardButton volunteerCall = new InlineKeyboardButton("Позвать волонтера").callbackData("CALL_VOLUNTEER");
+        List<InlineKeyboardButton> volunteerRow = new ArrayList<>();
+        volunteerRow.add(volunteerCall);
+        rows.add(volunteerRow);
 
+        // Создаем разметку
+        InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
+        for (List<InlineKeyboardButton> row : rows) {
+            markup.addRow(row.toArray(new InlineKeyboardButton[0]));
+        }
 
-        SendMessage request = new SendMessage(chatId, messageText);
-        request.replyMarkup(markup);
-
+        SendMessage request = new SendMessage(chatId, messageText).replyMarkup(markup);
         telegramBot.execute(request);
     }
-
 }
