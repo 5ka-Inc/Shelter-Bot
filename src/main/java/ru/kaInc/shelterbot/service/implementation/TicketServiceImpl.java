@@ -87,5 +87,14 @@ public class TicketServiceImpl implements TicketService {
         }
         return tickets;
     }
+
+    @Override
+    public List<Ticket> findAllOpen(Long id) {
+        List<Ticket> tickets = ticketRepo.findAllOpen(id);
+        if (tickets.isEmpty()) {
+            throw new EntityNotFoundException(String.format("Open tickets not found for volunteer %s", id));
+        }
+        return tickets;
+    }
 }
 

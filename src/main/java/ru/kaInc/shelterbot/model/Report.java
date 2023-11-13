@@ -1,5 +1,6 @@
 package ru.kaInc.shelterbot.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -38,10 +39,12 @@ public class Report {
 
     @OneToOne(mappedBy = "report")
     @JoinColumn(name = "photo_id")
+    @JsonIgnore
     private Photo photo;
 
     @ManyToOne
     @JoinColumn(name = "user_id")
+    @JsonIgnore
     private User user;
 
     @Override

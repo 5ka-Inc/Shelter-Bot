@@ -65,6 +65,24 @@ public class ReportServiceImpl implements ReportService {
     }
 
     @Override
+    public List<Report> findReportsByUsername(String username) {
+        List<Report> foundReports = reportRepo.findReportsByUsername(username);
+        if (foundReports.isEmpty()) {
+            throw new EntityNotFoundException(String.format("There is no reports of %s", username));
+        }
+        return foundReports;
+    }
+
+    @Override
+    public List<Report> findValidReportsByUsername(String username) {
+        List<Report> foundReports = reportRepo.findValidReportsByUsername(username);
+        if (foundReports.isEmpty()) {
+            throw new EntityNotFoundException(String.format("There is no reports of %s", username));
+        }
+        return foundReports;
+    }
+
+    @Override
     @Transactional
     public Optional<Report> updatedReport(Report report) {
         validateReport(report);
@@ -82,6 +100,15 @@ public class ReportServiceImpl implements ReportService {
 
 
         return Optional.of(reportRepo.save(existingReport));
+    }
+
+    @Override
+    public Report checkReport(Long id, Boolean isValid) {
+        Report foundReport = reportRepo.findById(id)
+                .orElseThrow(() -> new EntityNotFoundException(String.format("Report with id %s not found", id)));
+
+        foundReport.setReportValid(isValid);
+        return foundReport;
     }
 
     @Override
