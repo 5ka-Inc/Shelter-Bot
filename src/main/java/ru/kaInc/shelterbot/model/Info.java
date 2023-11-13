@@ -8,7 +8,7 @@ import java.util.Objects;
 
 @Entity
 @Data
-@Table(name = "info")
+@Table(name = "infos")
 public class Info {
 
     @Id
@@ -21,7 +21,7 @@ public class Info {
     private Callback command;
 
     @Column(name = "info")
-    private Callback text;
+    private String text;
 
     @ManyToOne
     @JoinColumn(name = "shelter_id")

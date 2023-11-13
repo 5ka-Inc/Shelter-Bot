@@ -1,11 +1,10 @@
 -- liquibase formatted sql
 
 -- changeset hellhorseman:1
-CREATE TABLE info
+CREATE TABLE infos
 (
-    id BIGINT   primary key,
-    command_info SMALLINT,
-    info TEXT,
-    shelter_id BIGINT
-
+    id           BIGSERIAL primary key,
+    command_info TEXT,
+    info         TEXT,
+    shelter_id   BIGINT
 );
