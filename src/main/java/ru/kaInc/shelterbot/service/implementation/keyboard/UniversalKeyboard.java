@@ -29,6 +29,7 @@ public class UniversalKeyboard {
             if (callback.getShelter() != null) {
                 type = callback.getShelter();
             }
+            //логику для обрабоки комманд из коллбека
             buttonCreator.createButtons(getChatId(update), telegramBot, callback.getText(), getLabels(callback), getButtons(callback));
         });
 
@@ -37,7 +38,9 @@ public class UniversalKeyboard {
     //Переделал стримы на циклы во имя производительности
     private List<String> getLabels(Callback callback) {
         ArrayList<Callback> callbacks = new ArrayList<>(List.copyOf(callback.getNextMenu()));
-        if (type != null && callback.getUniqueCallbacks() != null) {
+
+
+        if (callback.getUniqueCallbacks() != null && type != null && callback.getUniqueCallbacks().containsKey(type)) {
             callbacks.addAll(callback.getUniqueCallbacks().get(type));
         }
 
@@ -51,7 +54,7 @@ public class UniversalKeyboard {
 
     private List<String> getButtons(Callback callback) {
         ArrayList<Callback> callbacks = new ArrayList<>(List.copyOf(callback.getNextMenu()));
-        if (type != null && callback.getUniqueCallbacks() != null) {
+        if (callback.getUniqueCallbacks() != null && type != null && callback.getUniqueCallbacks().containsKey(type)) {
             callbacks.addAll(callback.getUniqueCallbacks().get(type));
         }
 
