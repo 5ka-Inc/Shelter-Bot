@@ -1,9 +1,12 @@
 package ru.kaInc.shelterbot.model;
 
 import com.fasterxml.jackson.annotation.JsonBackReference;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
 import ru.kaInc.shelterbot.model.enums.Role;
 
 import java.util.Objects;
@@ -46,10 +49,13 @@ public class User {
     @Enumerated(EnumType.STRING)
     private Role role;
 
-    @OneToMany(mappedBy = "volunteer")
-    private Set<Ticket> VolTickets;
+/*    @OneToMany(mappedBy = "volunteer")
+    @Nullable
+    private Set<Ticket> VolTickets;*/
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user")
+    @Nullable
     private Set<Ticket> UsrTickets;
 
     public User(Long chatId) {

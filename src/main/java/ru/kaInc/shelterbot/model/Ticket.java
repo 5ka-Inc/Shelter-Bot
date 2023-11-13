@@ -44,12 +44,11 @@ public class Ticket {
      */
     @ManyToOne()
     @JoinColumn(name = "user_id")
-    @JsonIgnore
     private User user;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "volunteer_id")
-    @JsonIgnore
     private User volunteer;
 
     /**

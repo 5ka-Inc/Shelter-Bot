@@ -27,8 +27,7 @@ CREATE TABLE shelters
 CREATE TABLE photo
 (
     id        BIGSERIAL PRIMARY KEY,
-    data      bytea,
-    report_id bigint
+    data      bytea
 );
 
 CREATE TABLE reports
