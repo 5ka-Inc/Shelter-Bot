@@ -85,7 +85,7 @@ public class ReportController {
     public ResponseEntity<List<Report>> findReportByUserId(@Parameter(description = "Идентификатор пользователя")
                                                      @PathVariable("id") Long id) {
         List<Report> report = reportService.getReportsByUserId(id);
-        if (report == null) {
+        if (report.isEmpty()) {
             return ResponseEntity.notFound().build();
         }
 

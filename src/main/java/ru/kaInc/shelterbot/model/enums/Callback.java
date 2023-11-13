@@ -73,6 +73,7 @@ public enum Callback {
 
     //Конечные пункты меню, после которых нет других меню:
 
+    SEND_REPORT("Отправить отчёт"),
     ADDRESS("Адрес"),
 
     TIME("Рабочее время"),
@@ -84,6 +85,8 @@ public enum Callback {
     SNILS("Снилс"),
 
     CERTIFICATE("Справка, что не дурак"),
+
+    REGISTER("Срегистрация"),
 
     WHISCAS("Чек на вискас"),
 
@@ -100,6 +103,7 @@ public enum Callback {
     INFO_ADOPTION("Информация об усыновлении", List.of(DOCUMENTS, INTRODUCTION)),
 
     CHOOSE_INFO("Что вы хотите узнать?", List.of(INFO_ADOPTION, INFO_SHELTER)),
+    DEV("Dev_menu", List.of(REGISTER, SEND_REPORT)),
 
 
     // Пункты меню, отвечающие за выбор приюта:
@@ -108,7 +112,8 @@ public enum Callback {
     SHELTER_CAT("Кошачий приют", List.of(INFO_SHELTER, INFO_ADOPTION), Type.CAT),
 
 
-    DEFAULT_MENU("Выберите приют", List.of(SHELTER_DOG, SHELTER_CAT)),
+
+    DEFAULT_MENU("Выберите приют", List.of(SHELTER_DOG, SHELTER_CAT, DEV)),
 
 
 
@@ -122,9 +127,6 @@ public enum Callback {
     INVALID_REPORT ("Дорогой усыновитель, мы заметили, что ты заполняешь отчет не так подробно, как необходимо." +
             " Пожалуйста, подойди ответственнее к этому занятию. В противном случае волонтеры приюта" +
             " будут обязаны самолично проверять условия содержания животного"),
-
-
-
     ;
 
     private final String text;

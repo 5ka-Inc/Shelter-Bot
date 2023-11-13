@@ -13,6 +13,8 @@ import java.util.List;
 
 public interface UpdateHubService {
 
+    void processCallVolunteer(Update update, TelegramBot telegramBot);
+
     /**
      * Adds a new user if they don't already exist in the bot's user repository based on the provided Update object.
      * @param update The Telegram Update object representing a user's interaction or message.

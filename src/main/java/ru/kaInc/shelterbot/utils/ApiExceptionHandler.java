@@ -15,7 +15,7 @@ public class ApiExceptionHandler {
     public ResponseEntity<String> handleEntityNotFoundException(EntityNotFoundException e) {
         String message = String.format("Exception %s: %s", e.getClass(), e.getMessage());
         log.warn(message);
-        return new ResponseEntity<>(message, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(message, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(IllegalStateException.class)

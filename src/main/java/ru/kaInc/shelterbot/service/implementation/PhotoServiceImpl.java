@@ -1,10 +1,17 @@
 package ru.kaInc.shelterbot.service.implementation;
 
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.File;
+import com.pengrad.telegrambot.model.PhotoSize;
+import com.pengrad.telegrambot.request.GetFile;
+import com.pengrad.telegrambot.request.SendMessage;
+import com.pengrad.telegrambot.response.GetFileResponse;
 import jakarta.persistence.EntityExistsException;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.multipart.MultipartFile;
@@ -12,12 +19,17 @@ import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.repo.PhotoRepo;
 import ru.kaInc.shelterbot.service.PhotoService;
-
+import ru.kaInc.shelterbot.service.ReportService;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 
 @Service
 @Transactional
@@ -26,9 +38,16 @@ public class PhotoServiceImpl implements PhotoService {
 
     private long MAX_SIZE = 1024 * 600;
     private final PhotoRepo photoRepo;
+    private final ReportService reportService;
 
-    public PhotoServiceImpl(PhotoRepo photoRepo) {
+    @Value("${photos.dir.path}")
+    private String photoDir;
+    private final Path photosDir = Paths.get("./photos");
+
+
+    public PhotoServiceImpl(PhotoRepo photoRepo, ReportService reportService) {
         this.photoRepo = photoRepo;
+        this.reportService = reportService;
     }
 
     @Override
@@ -85,9 +104,8 @@ public class PhotoServiceImpl implements PhotoService {
     }
 
 
-
     @Override
-    public Photo refactorPhoto(Long id, MultipartFile photo){
+    public Photo refactorPhoto(Long id, MultipartFile photo) {
         logger.info("Photo saved {}", id);
 
         Photo newPhoto = new Photo();
@@ -103,4 +121,41 @@ public class PhotoServiceImpl implements PhotoService {
         return photoRepo.save(newPhoto);
     }
 
+    @Override
+    public Photo savePhoto(Long chatId, PhotoSize[] photoSizes, TelegramBot telegramBot) {
+        logger.info("Обработка отчета для chatId: {}", chatId);
+
+        PhotoSize photoSize = photoSizes[photoSizes.length - 1];
+        GetFile getFileRequest = new GetFile(photoSize.fileId());
+        GetFileResponse getFileResponse = telegramBot.execute(getFileRequest);
+        Photo photo = new Photo();
+
+        if (getFileResponse.isOk()) {
+            File file = getFileResponse.file();
+            String fullFilePath = telegramBot.getFullFilePath(file);
+
+            try (InputStream fileStream = new URL(fullFilePath).openStream()) {
+                String fileName = file.fileId() + ".jpg";
+                Path pathToSave = photosDir.resolve(fileName);
+                Files.createDirectories(photosDir);
+                Files.copy(fileStream, pathToSave, StandardCopyOption.REPLACE_EXISTING);
+                logger.info("Фотография сохранена по пути: {}", pathToSave);
+
+                photo.setFilePath(pathToSave.toString());
+                photo.setFileSize((long) photoSize.fileSize());
+                photo.setMediaType("image/jpeg"); // Или определяем MIME-тип динамически
+
+                telegramBot.execute(new SendMessage(chatId, "Отчет успешно отправлен!"));
+                logger.info("Подтверждение отправлено пользователю с chatId: {}", chatId);
+            } catch (IOException e) {
+                e.printStackTrace();
+                telegramBot.execute(new SendMessage(chatId, "Произошла ошибка при сохранении фотографии."));
+                logger.error("Ошибка при сохранении фотографии для chatId: {}", chatId, e);
+            }
+        } else {
+            telegramBot.execute(new SendMessage(chatId, "Не удалось получить информацию о файле."));
+            logger.error("Не удалось получить информацию о файле для chatId: {}", chatId);
+        }
+        return photo;
+    }
 }

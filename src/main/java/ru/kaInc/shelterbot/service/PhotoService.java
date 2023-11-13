@@ -1,5 +1,7 @@
 package ru.kaInc.shelterbot.service;
 
+import com.pengrad.telegrambot.TelegramBot;
+import com.pengrad.telegrambot.model.PhotoSize;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
@@ -19,4 +21,5 @@ public interface PhotoService {
 
     Photo refactorPhoto(Long id, MultipartFile photo);
 
+    Photo savePhoto(Long chatId, PhotoSize[] photoSizes, TelegramBot telegramBot);
 }
