@@ -2,6 +2,7 @@ package ru.kaInc.shelterbot.service;
 
 import com.pengrad.telegrambot.TelegramBot;
 import com.pengrad.telegrambot.model.PhotoSize;
+import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import ru.kaInc.shelterbot.exception.ImageSizeExceededException;

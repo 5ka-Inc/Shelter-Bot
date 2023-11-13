@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.persistence.EntityNotFoundException;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -19,6 +20,7 @@ import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.service.ReportService;
 
 
+import java.io.IOException;
 import java.util.List;
 
 import java.util.Optional;
@@ -123,7 +125,6 @@ public class ReportController {
 
         return ResponseEntity.ok(foundReports);
     }
-
     @Operation(summary = "Получить проверенные и одобренные отчеты по username пользователя в telegram")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Отчеты найдены",
@@ -132,7 +133,7 @@ public class ReportController {
             @ApiResponse(responseCode = "404", description = "Отчеты не найдены")})
     @GetMapping("/username/valid")
     public ResponseEntity<?> findValidReportsByUsername(@Parameter(description = "username пользователя в telegram")
-                                                  @RequestParam("username") String username
+                                                        @RequestParam("username") String username
     ) {
         List<Report> foundReports = reportService.findValidReportsByUsername(username);
         if (foundReports.isEmpty()) {
@@ -176,6 +177,4 @@ public class ReportController {
         reportService.deleteReportById(id);
         return ResponseEntity.ok().build();
     }
-
-
 }
