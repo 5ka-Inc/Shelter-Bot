@@ -23,6 +23,4 @@ public interface PhotoService {
     Photo refactorPhoto(Long id, MultipartFile photo);
 
     Photo savePhoto(Long chatId, PhotoSize[] photoSizes, TelegramBot telegramBot);
-
-    void getPhotosByReportId(Long reportId, HttpServletResponse response) throws IOException;
 }

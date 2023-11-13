@@ -160,26 +160,4 @@ public class PhotoServiceImpl implements PhotoService {
         }
         return photo;
     }
-
-    @Override
-    public void getPhotosByReportId(Long reportId, HttpServletResponse response) throws IOException {
-        logger.info("Получение фотографий для отчета с ID: {}", reportId);
-        List<Photo> photos = photoRepo.findPhotoByReportId(reportId);
-
-        Photo photo = photos.stream()
-                .findAny()
-                .orElseThrow(() -> new EntityNotFoundException("Фотографии для отчета с ID " + reportId + " не найдены"));
-
-        Path photoPath = Path.of(photo.getFilePath());
-        response.setContentType(photo.getMediaType());
-        response.setContentLength(photo.getFileSize().intValue());
-        response.setStatus(HttpServletResponse.SC_OK);
-        try (InputStream is = Files.newInputStream(photoPath)) {
-            logger.info("Отправка фотографии для отчета с ID: {}", reportId);
-            is.transferTo(response.getOutputStream());
-        } catch (IOException e) {
-            logger.error("Ошибка при отправке фотографии для отчета с ID: {}", reportId, e);
-            throw e;
-        }
-    }
 }

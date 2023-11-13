@@ -8,13 +8,9 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.persistence.EntityNotFoundException;
-
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
-import org.springframework.http.HttpHeaders;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -41,7 +37,7 @@ public class PhotoController {
             @ApiResponse(responseCode = "404", description = "Фото не найдено")})
     @GetMapping("id/{id}")
     public void findPhotoById(@Parameter(description = "Идентификатор фото")
-                                                @PathVariable("id") Long id, HttpServletResponse response) throws IOException{
+                              @PathVariable("id") Long id, HttpServletResponse response) throws IOException {
 
         Photo foundPhoto;
 
@@ -70,21 +66,6 @@ public class PhotoController {
         // Возвращаем изображение в байтах и устанавливаем заголовки
 
     }
-
-
-    @Operation(summary = "Получить фото по id отчёта")
-    @ApiResponses(value = {
-            @ApiResponse(responseCode = "200", description = "Фото найдено"),
-            @ApiResponse(responseCode = "404", description = "Фото не найдено")})
-    @GetMapping("report/{id}")
-    public ResponseEntity<Void> getPhotosByReportId(@Parameter(description = "ID отчёта")
-                                                    @PathVariable("id") Long id,
-                                                    HttpServletResponse response
-    ) throws IOException {
-        photoService.getPhotosByReportId(id, response);
-        return ResponseEntity.ok().build();
-    }
-
     @Operation(summary = "Сохранить фото")
     @ApiResponses(value = {
             @ApiResponse(responseCode = "200", description = "Фото успешно изменено"),
