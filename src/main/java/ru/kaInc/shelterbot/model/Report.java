@@ -37,7 +37,7 @@ public class Report {
     @Column(name = "is_report_valid")
     private boolean isReportValid;
 
-    @OneToOne(mappedBy = "report")
+    @OneToOne
     @JoinColumn(name = "photo_id")
     @JsonIgnore
     private Photo photo;
@@ -58,5 +58,19 @@ public class Report {
     @Override
     public int hashCode() {
         return Objects.hash(id);
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "id=" + id +
+                ", date=" + date +
+                ", diet='" + diet + '\'' +
+                ", health='" + health + '\'' +
+                ", behavior='" + behavior + '\'' +
+                ", isReportValid=" + isReportValid +
+                ", photo=" + photo +
+                ", user=" + user.getUsername() + " " + user.getName() + " " + user.getId() +
+                '}';
     }
 }

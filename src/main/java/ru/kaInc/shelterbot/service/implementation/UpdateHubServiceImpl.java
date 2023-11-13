@@ -5,6 +5,7 @@ import com.pengrad.telegrambot.model.PhotoSize;
 import com.pengrad.telegrambot.model.Update;
 import com.pengrad.telegrambot.request.GetFile;
 import com.pengrad.telegrambot.request.SendMessage;
+import jakarta.persistence.EntityNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -102,7 +103,6 @@ public class UpdateHubServiceImpl implements UpdateHubService {
 
     public void photo(Update update, TelegramBot telegramBot) {
         try {
-            System.err.println(update.message().photo());
             GetFile photo = new GetFile(update.message().photo()[1].fileId());
             telegramBot.getFileContent(telegramBot.execute(photo).file());
             System.err.println(telegramBot.getFullFilePath(telegramBot.execute(photo).file()));
@@ -166,7 +166,12 @@ public class UpdateHubServiceImpl implements UpdateHubService {
     public void startReportCreation(Update update, TelegramBot telegramBot) {
         Long chatId = update.callbackQuery().message().chat().id();
         Report report = new Report();
-        report.setUser(userService.findById(chatId));
+        try {
+            report.setUser(userService.findById(chatId));
+        } catch (EntityNotFoundException e) {
+            logger.error(e.getMessage());
+            sendMessage(chatId, "Пользователь не обнаружен, либо еще не взял питомца", telegramBot);
+        }
         reportCreationState.put(chatId, report);
 
         sendMessage(chatId, "Пожалуйста, введите информацию о диете:", telegramBot);

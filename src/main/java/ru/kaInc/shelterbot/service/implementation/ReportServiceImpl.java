@@ -10,10 +10,12 @@ import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.repo.PhotoRepo;
 import ru.kaInc.shelterbot.repo.ReportRepo;
+
 import ru.kaInc.shelterbot.service.ReportService;
 
 import java.time.LocalDateTime;
 import java.util.List;
+
 import java.util.Optional;
 
 @Service
@@ -37,16 +39,19 @@ public class ReportServiceImpl implements ReportService {
         return reportRepo.save(report);
     }
 
-    @Override
-    @Transactional
-    public void saveReportWithPhoto(Report report, Photo photo) {
-        photo.setReport(report);
-        photoRepo.save(photo);
+    public Photo savePhoto(Photo photo) {
         logger.info("Запись фотографии сохранена с ID: {}", photo.getId());
+        return photoRepo.save(photo);
+    }
 
-        report.setPhoto(photo);
+
+    @Override
+
+    public void saveReportWithPhoto(Report report, Photo photo) {
+        report.setPhoto(savePhoto(photo));
         reportRepo.save(report);
         logger.info("Запись отчета сохранена с ID: {}", report.getId());
+
     }
 
     @Override

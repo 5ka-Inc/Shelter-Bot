@@ -9,6 +9,9 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.persistence.EntityNotFoundException;
+
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
@@ -20,7 +23,9 @@ import ru.kaInc.shelterbot.exception.ImageSizeExceededException;
 import ru.kaInc.shelterbot.model.Photo;
 import ru.kaInc.shelterbot.service.PhotoService;
 
-import java.io.IOException;
+import java.io.*;
+import java.nio.file.Files;
+import java.nio.file.Path;
 
 @RestController
 @RequiredArgsConstructor
@@ -35,20 +40,35 @@ public class PhotoController {
             @ApiResponse(responseCode = "200", description = "Фото найдено"),
             @ApiResponse(responseCode = "404", description = "Фото не найдено")})
     @GetMapping("id/{id}")
-    public ResponseEntity<byte[]> findPhotoById(@Parameter(description = "Идентификатор фото")
-                                                @PathVariable("id") Long id) {
-        Photo foundPhoto = photoService.findPhotoById(id);
+    public void findPhotoById(@Parameter(description = "Идентификатор фото")
+                                                @PathVariable("id") Long id, HttpServletResponse response) throws IOException{
 
-        if (foundPhoto == null) {
-            return ResponseEntity.notFound().build();
+        Photo foundPhoto;
+
+        try {
+            foundPhoto = photoService.findPhotoById(id);
+        } catch (EntityNotFoundException e) {
+            response.sendError(404);
+            return;
+        }
+        Path path = Path.of(foundPhoto.getFilePath());
+
+        try (
+                InputStream is = Files.newInputStream(path);
+                OutputStream os = response.getOutputStream();
+                BufferedInputStream bis = new BufferedInputStream(is, 1024);
+                BufferedOutputStream bos = new BufferedOutputStream(os, 1024)
+        ) {
+
+            response.setStatus(200);
+            response.setContentType(foundPhoto.getMediaType());
+            response.setContentLength(foundPhoto.getFileSize().intValue());
+            bis.transferTo(bos);
         }
 
-        HttpHeaders headers = new HttpHeaders();
-
-        headers.setContentType(MediaType.parseMediaType(foundPhoto.getMediaType()));
 
         // Возвращаем изображение в байтах и устанавливаем заголовки
-        return new ResponseEntity<>(foundPhoto.getData(), headers, HttpStatus.OK);
+
     }
 
 
