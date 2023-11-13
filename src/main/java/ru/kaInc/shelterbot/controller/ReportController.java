@@ -118,7 +118,7 @@ public class ReportController {
             @ApiResponse(responseCode = "404", description = "Отчеты не найдены")})
     @GetMapping("/username/valid")
     public ResponseEntity<?> findValidReportsByUsername(@Parameter(description = "username пользователя в telegram")
-                                                  @RequestParam("username") String username
+                                                        @RequestParam("username") String username
     ) {
         List<Report> foundReports = reportService.findValidReportsByUsername(username);
         if (foundReports.isEmpty()) {
@@ -162,6 +162,4 @@ public class ReportController {
         reportService.deleteReportById(id);
         return ResponseEntity.ok().build();
     }
-
-
 }
