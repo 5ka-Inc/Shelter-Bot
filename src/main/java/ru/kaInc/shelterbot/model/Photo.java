@@ -34,10 +34,6 @@ public class Photo {
     @Column(name = "data")
     private byte[] data;
 
-    @OneToOne
-    @JoinColumn(name = "report_id")
-    private Report report;
-
 
     @Override
     public boolean equals(Object o) {
@@ -51,4 +47,5 @@ public class Photo {
     public int hashCode() {
         return Objects.hash(id);
     }
+
 }

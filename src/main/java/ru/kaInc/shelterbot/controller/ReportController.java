@@ -8,14 +8,19 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.persistence.EntityNotFoundException;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
 import ru.kaInc.shelterbot.model.Report;
 import ru.kaInc.shelterbot.service.ReportService;
 
+
 import java.util.List;
+
 import java.util.Optional;
 
 @RestController
@@ -25,6 +30,7 @@ import java.util.Optional;
 public class ReportController {
 
     private final ReportService reportService;
+
 
     @Operation(summary = "Получить все отчеты")
     @ApiResponses(value = {
@@ -50,8 +56,11 @@ public class ReportController {
     @GetMapping("id/{id}")
     public ResponseEntity<Report> findReportById(@Parameter(description = "Идентификатор отчета")
                                                  @PathVariable("id") Long id) {
-        Report report = reportService.getReportById(id);
-        if (report == null) {
+
+        Report report;
+        try {
+            report = reportService.getReportById(id);
+        } catch (EntityNotFoundException e) {
             return ResponseEntity.notFound().build();
         }
         return ResponseEntity.ok(report);
@@ -65,11 +74,16 @@ public class ReportController {
             @ApiResponse(responseCode = "404", description = "Отчет не найден")})
     @PutMapping
     public ResponseEntity<Optional<Report>> updateReport(@RequestBody Report report) {
-        Report foundReport = reportService.getReportById(report.getId());
+/*        Report foundReport = reportService.getReportById(report.getId());
         if (foundReport == null) {
             return ResponseEntity.notFound().build();
+        }*/
+        Optional<Report> updatedReport;
+        try {
+           updatedReport = reportService.updatedReport(report);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity.notFound().build();
         }
-        Optional<Report> updatedReport = reportService.updatedReport(foundReport);
         return ResponseEntity.ok(updatedReport);
     }
 
@@ -83,7 +97,7 @@ public class ReportController {
     @GetMapping("user-id/{id}")
 
     public ResponseEntity<List<Report>> findReportByUserId(@Parameter(description = "Идентификатор пользователя")
-                                                     @PathVariable("id") Long id) {
+                                                           @PathVariable("id") Long id) {
         List<Report> report = reportService.getReportsByUserId(id);
         if (report == null) {
             return ResponseEntity.notFound().build();
